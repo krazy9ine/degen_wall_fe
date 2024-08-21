@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, createContext, useEffect, useRef } from "react";
+import React, { useState, createContext } from "react";
 import { useWallet } from "@solana/wallet-adapter-react";
 import useInterval from "../util/useInterval";
 

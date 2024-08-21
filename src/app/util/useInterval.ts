@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useEffect, useRef } from "react";
+import { useEffect, useRef } from "react";
 
 //@ts-ignore
 export default function useInterval(callback, delay: number) {

@@ -1,13 +1,15 @@
-import ConnectWalletButton from "../common/connectWalletButton";
-import SelectTokenDropdown from "../common/selectTokenDropdown";
-import TokenBalance from "../common/tokenBalance";
+import {
+  ConnectWalletButton,
+  SelectTokenDropdown,
+  TokenBalanceDisplay,
+} from "../common";
 
 export default function Nav() {
   return (
     <nav className="flex">
       <ConnectWalletButton></ConnectWalletButton>
       <SelectTokenDropdown></SelectTokenDropdown>
-      <TokenBalance></TokenBalance>
+      <TokenBalanceDisplay></TokenBalanceDisplay>
     </nav>
   );
 }

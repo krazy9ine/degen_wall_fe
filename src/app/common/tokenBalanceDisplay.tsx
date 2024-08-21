@@ -11,7 +11,7 @@ const ASSOCIATED_TOKEN_PROGRAM_ID = new PublicKey(
   "ATokenGPvbdGVxr1b2hvZbsiqW5xWH25efTNsLJA8knL"
 );
 
-export default function TokenBalance() {
+export default function TokenBalanceDisplay() {
   const selectTokenContext = useContext(SelectTokenContext);
   const wallet = useWallet();
   const connectionContext = useConnection();

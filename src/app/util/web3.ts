@@ -12,7 +12,8 @@ const ASSOCIATED_TOKEN_PROGRAM_ID = new PublicKey(
 export const getBalance = async (
   owner: PublicKey,
   mint: TokenAddress,
-  connection: Connection
+  connection: Connection,
+  onSetBalance: (balance: number) => void
 ) => {
   try {
     if (mint === WSOL_ADDRESS) return await connection.getBalance(owner);

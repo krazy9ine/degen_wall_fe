@@ -1,14 +1,21 @@
 "use client";
 
-import React, { useState, createContext } from "react";
+import React, { useState, createContext, useEffect } from "react";
 import { useWallet } from "@solana/wallet-adapter-react";
 import useInterval from "../util/useInterval";
 
-const WalletChangeContext = createContext(null);
+export const WalletChangeContext = createContext(null);
 
-export const WalletChangeProvider = ({ children }: { children: React.ReactNode }) => {
+export const WalletChangeProvider = ({
+  children,
+}: {
+  children: React.ReactNode;
+}) => {
   const wallet = useWallet();
   const [currentPubkey, setCurrentPubkey] = useState(null);
+  useEffect(() => {
+    console.log(wallet.connected);
+  }, [wallet.connected]);
   useInterval(async () => {
     const provider = window //@ts-ignore
       ? window?.solana || window?.phantom || window?.solflare
@@ -22,6 +29,8 @@ export const WalletChangeProvider = ({ children }: { children: React.ReactNode }
     }
   }, 100);
   return (
-    <WalletChangeContext.Provider value={null}>{children}</WalletChangeContext.Provider>
+    <WalletChangeContext.Provider value={null}>
+      {children}
+    </WalletChangeContext.Provider>
   );
 };

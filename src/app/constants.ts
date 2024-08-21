@@ -1,0 +1,3 @@
+export const WSOL_ADDRESS = "So11111111111111111111111111111111111111112";
+export const DEV_ADDRESS = "mint_token_here";
+export const TOKEN_ARRAY = [WSOL_ADDRESS, DEV_ADDRESS];

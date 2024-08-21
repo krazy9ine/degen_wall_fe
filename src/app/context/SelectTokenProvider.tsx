@@ -6,8 +6,8 @@ import { WSOL_ADDRESS } from "../constants";
 
 export const SelectTokenContext = createContext<{
   tokenAddress: TokenAddress;
-  onSetTokenAddress: (newTokenAddress: TokenAddress) => void;
-} | null>(null);
+  onSetTokenAddress: (newTokenAddress: TokenAddress) => void; //@ts-ignore
+}>(null);
 
 export const SelectTokenProvider = ({
   children,
@@ -16,13 +16,15 @@ export const SelectTokenProvider = ({
 }) => {
   const [tokenAddress, setTokenAddress] = useState<TokenAddress>(WSOL_ADDRESS);
   useEffect(() => {
-    const savedValue = window.localStorage.getItem("count");
     setTokenAddress(
       (localStorage.getItem("tokenAddress") as TokenAddress) || WSOL_ADDRESS
     );
   }, []);
   const onSetTokenAddress = (newTokenAddress: TokenAddress) => {
-    if (newTokenAddress !== tokenAddress) setTokenAddress(newTokenAddress);
+    if (newTokenAddress !== tokenAddress) {
+      setTokenAddress(newTokenAddress);
+      localStorage.setItem("tokenAddress", newTokenAddress);
+    }
   };
   return (
     <SelectTokenContext.Provider

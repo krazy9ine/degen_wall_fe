@@ -4,6 +4,7 @@ import "./globals.css";
 import AppWalletProvider from "./context/AppWalletProvider";
 import { WalletChangeProvider } from "./context/WalletChangeProvider";
 import { SelectTokenProvider } from "./context/SelectTokenProvider";
+import { TokenBalanceProvider } from "./context/TokenBalanceProvider";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -23,7 +24,9 @@ export default function RootLayout({
         {
           <AppWalletProvider>
             <WalletChangeProvider>
-              <SelectTokenProvider>{children}</SelectTokenProvider>
+              <SelectTokenProvider>
+                <TokenBalanceProvider>{children}</TokenBalanceProvider>
+              </SelectTokenProvider>
             </WalletChangeProvider>
           </AppWalletProvider>
         }

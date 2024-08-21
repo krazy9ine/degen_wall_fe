@@ -13,9 +13,6 @@ export const WalletChangeProvider = ({
 }) => {
   const wallet = useWallet();
   const [currentPubkey, setCurrentPubkey] = useState(null);
-  useEffect(() => {
-    console.log(wallet.connected);
-  }, [wallet.connected]);
   useInterval(async () => {
     const provider = window //@ts-ignore
       ? window?.solana || window?.phantom || window?.solflare

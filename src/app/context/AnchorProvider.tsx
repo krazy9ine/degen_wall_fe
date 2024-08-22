@@ -2,30 +2,32 @@
 
 import { createContext, useEffect, useRef } from "react";
 import AnchorInterface from "../web3/program";
-import { useConnection, useWallet } from "@solana/wallet-adapter-react";
-import { Provider } from "@coral-xyz/anchor";
+import {
+  useAnchorWallet,
+  useConnection,
+  useWallet,
+} from "@solana/wallet-adapter-react";
 
-export const AnchorContext = createContext(null);
+export const AnchorContext = createContext<AnchorInterface | undefined>(
+  undefined
+);
 
 export const AnchorProvider = ({ children }: { children: React.ReactNode }) => {
-  const wallet = useWallet();
+  const walletState = useWallet();
+  const wallet = useAnchorWallet();
   const { connection } = useConnection();
   const anchorInterface = useRef<AnchorInterface>(); // contract interactions
   useEffect(() => {
-    if (wallet.connecting) {
+    if (walletState.connecting && wallet) {
       if (!anchorInterface.current)
-        anchorInterface.current = new AnchorInterface({
-          ...wallet,
-          connection,
-        } as Provider);
-      else
-        anchorInterface.current.updateProgram({
-          ...wallet,
-          connection,
-        } as Provider);
+        anchorInterface.current = new AnchorInterface(connection, wallet);
+      else anchorInterface.current.updateProgram(connection, wallet);
     }
-  }, [wallet, connection]);
+  }, [wallet, walletState, connection]);
+
   return (
-    <AnchorContext.Provider value={null}>{children}</AnchorContext.Provider>
+    <AnchorContext.Provider value={anchorInterface.current}>
+      {children}
+    </AnchorContext.Provider>
   );
 };

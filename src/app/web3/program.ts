@@ -1,4 +1,4 @@
-import { Program, Provider } from "@coral-xyz/anchor";
+import { AnchorProvider, Program } from "@coral-xyz/anchor";
 import {
   AccountStruct,
   AnchorArray,
@@ -16,17 +16,21 @@ import { Connection } from "@solana/web3.js";
 import bs58 from "bs58";
 import { DegenWall } from "./degen_wall";
 import IDL from "./idl.json";
+import { AnchorWallet } from "@solana/wallet-adapter-react";
 
 export default class AnchorInterface {
-  public program: Program<DegenWall>;
+  private program: Program<DegenWall>;
   public readonly MAX_DATA_SIZE: number;
   public readonly PX_SIZE: number;
   public readonly PX_WIDTH: number;
   public readonly PX_HEIGHT: number;
   public readonly DATA_DELIMITER: number;
 
-  constructor(wallet: Provider) {
-    this.program = new Program<DegenWall>(IDL as DegenWall, wallet);
+  constructor(connection: Connection, wallet?: AnchorWallet) {
+    const provider = wallet
+      ? new AnchorProvider(connection, wallet)
+      : new AnchorProvider(connection, null as unknown as AnchorWallet);
+    this.program = new Program<DegenWall>(IDL as DegenWall, provider);
     this.MAX_DATA_SIZE = this.getNumberValue("maxDataSize");
     this.PX_SIZE = this.getNumberValue("pxSize");
     this.PX_WIDTH = this.getNumberValue("pxWidth");
@@ -34,12 +38,21 @@ export default class AnchorInterface {
     this.DATA_DELIMITER = this.getNumberValue("dataDelimiter");
   }
 
-  updateProgram(wallet: Provider) {
-    this.program = new Program<DegenWall>(IDL as DegenWall, wallet);
+  updateProgram(connection: Connection, wallet: AnchorWallet) {
+    const provider = new AnchorProvider(connection, wallet);
+    this.program = new Program<DegenWall>(IDL as DegenWall, provider);
   }
 
-  getParsedEvent(event: MetadataAccountCreatedEvent) {
-    return this.getParsedAccount(event);
+  registerEventListener(callback?: (event: MetadataAccountParsed) => void) {
+    this.program.addEventListener(
+      "metadataAccountCreated",
+      (eventRAW, _slot) => {
+        if (callback) {
+          const event = this.getParsedEvent(eventRAW);
+          callback(event);
+        }
+      }
+    );
   }
 
   async getAllAccounts() {
@@ -51,6 +64,10 @@ export default class AnchorInterface {
     return accountsDeserialized
       .map((account) => this.getParsedAccount(account))
       .sort((a, b) => b.timestamp - a.timestamp);
+  }
+
+  private getParsedEvent(event: MetadataAccountCreatedEvent) {
+    return this.getParsedAccount(event);
   }
 
   private getNumberValue(key: ConstantType): number {

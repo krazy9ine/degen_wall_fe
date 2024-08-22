@@ -1,7 +1,9 @@
 "use client";
 
 import { PX_HEIGHT, PX_WIDTH } from "@/app/constants";
-import { useEffect, useRef } from "react";
+import { EventListenerContext } from "@/app/context/EventListenerProvider";
+import { MetadataAccountParsed } from "@/app/types";
+import { useContext, useEffect, useRef } from "react";
 
 const CANVAS_DISPLAY_RATIO = 0.8;
 const SQUARE_MIN_SIZE = 12;
@@ -9,6 +11,8 @@ const SQUARE_MIN_SIZE = 12;
 export default function Canvas() {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const ctxRef = useRef<CanvasRenderingContext2D>(null); // Ref to store the canvas context
+  const setEventHandler = useContext(EventListenerContext);
+  const isInitialRender = useRef(true);
 
   const rows = PX_HEIGHT;
   const cols = PX_WIDTH;
@@ -42,7 +46,15 @@ export default function Canvas() {
     ctx.strokeRect(x, y, squareSize, squareSize);
   };
 
+  const dodoo = (event: MetadataAccountParsed) => {
+    console.log(event);
+  };
+
   useEffect(() => {
+    if (isInitialRender.current) {
+      isInitialRender.current = false;
+      setEventHandler(dodoo);
+    }
     const canvas = canvasRef.current;
     if (canvas) {
       const ctx = canvas.getContext("2d");

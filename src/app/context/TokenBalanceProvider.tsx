@@ -4,7 +4,7 @@ import React, { useState, createContext, useEffect, useContext } from "react";
 import { SelectTokenContext } from "./SelectTokenProvider";
 import { useConnection, useWallet } from "@solana/wallet-adapter-react";
 import { updateBalance } from "../web3/updateBalance";
-import useInterval from "../util/useInterval";
+import useInterval from "../hooks/useInterval";
 import { FETCH_BALANCE_INTERVAL_MS } from "../constants";
 
 export const TokenBalanceContext = createContext(0);

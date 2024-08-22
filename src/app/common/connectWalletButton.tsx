@@ -1,5 +1,5 @@
 import { WalletMultiButton } from "@solana/wallet-adapter-react-ui";
-import useIsMounted from "../util/useIsMounted";
+import useIsMounted from "../hooks/useIsMounted";
 
 export default function ConnectWalletButton() {
   const mounted = useIsMounted();

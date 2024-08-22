@@ -2,7 +2,7 @@
 
 import React, { useState, createContext, useEffect } from "react";
 import { useWallet } from "@solana/wallet-adapter-react";
-import useInterval from "../util/useInterval";
+import useInterval from "../hooks/useInterval";
 
 export const WalletChangeContext = createContext(null);
 

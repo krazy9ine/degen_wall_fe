@@ -1,3 +1,5 @@
+"use client";
+
 import { PX_HEIGHT, PX_WIDTH } from "@/app/constants";
 import { useEffect, useRef } from "react";
 
@@ -12,7 +14,9 @@ export default function Canvas() {
   const cols = PX_WIDTH;
   const squareSize = Math.max(
     SQUARE_MIN_SIZE,
-    Math.floor((window.innerWidth * CANVAS_DISPLAY_RATIO) / cols)
+    typeof window !== "undefined"
+      ? Math.floor((window.innerWidth * CANVAS_DISPLAY_RATIO) / cols)
+      : SQUARE_MIN_SIZE
   );
   const borderColor = "#FFFFFF";
 

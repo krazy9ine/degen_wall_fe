@@ -5,6 +5,7 @@ import AppWalletProvider from "./context/AppWalletProvider";
 import { WalletChangeProvider } from "./context/WalletChangeProvider";
 import { SelectTokenProvider } from "./context/SelectTokenProvider";
 import { TokenBalanceProvider } from "./context/TokenBalanceProvider";
+import { AnchorProvider } from "./context/AnchorProvider";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -24,9 +25,11 @@ export default function RootLayout({
         {
           <AppWalletProvider>
             <WalletChangeProvider>
-              <SelectTokenProvider>
-                <TokenBalanceProvider>{children}</TokenBalanceProvider>
-              </SelectTokenProvider>
+              <AnchorProvider>
+                <SelectTokenProvider>
+                  <TokenBalanceProvider>{children}</TokenBalanceProvider>
+                </SelectTokenProvider>
+              </AnchorProvider>
             </WalletChangeProvider>
           </AppWalletProvider>
         }

@@ -15,7 +15,7 @@ const DEFAULT_WEBSITE = "https://cacat.com";
 const DEFAULT_TWITTER = "https://x.com";
 const DEFAULT_COMMUNITY = "https://t.me";
 const DEFAULT_IMAGE = "https://imgur.com";
-const DEFAULT_COLOR = "ffffff";
+const DEFAULT_COLOR = "1b1d28";
 const URL_PREFIX = "https://";
 
 const TWITTER_REGEX = /^[a-zA-Z0-9_]{1,15}$/;

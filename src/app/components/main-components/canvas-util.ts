@@ -134,7 +134,21 @@ export const getUpdatedCanvas = (
   return pixelsLeft ? [canvas, pixelsLeft] : [canvas, 0];
 };
 
+const fetchLatestCanvas = async () => {
+  try {
+    const response = await fetch("http://localhost:3001");
+    if (!response.ok) {
+      throw new Error(`HTTP error! Status: ${response.status}`);
+    }
+    const canvas = await response.json();
+    return canvas;
+  } catch (error) {
+    console.error("Error fetching canvas data:", error);
+    return getDefaultCanvas(); // Handle error as appropriate
+  }
+};
+
 export const initAndGetCanvas = async () => {
-  canvas = getDefaultCanvas();
+  canvas = await fetchLatestCanvas();
   return canvas;
 };

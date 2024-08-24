@@ -34,11 +34,11 @@ export default function Canvas() {
     const onInitAndGetCanvas = async () => {
       const initialCanvas = await initAndGetCanvas();
       setCanvasLayout(initialCanvas);
-      setEventHandler(updateCanvas);
     };
 
     if (isInitialRender.current) {
       isInitialRender.current = false;
+      setEventHandler(updateCanvas);
       onInitAndGetCanvas();
     }
   }, [canvasLayout, setEventHandler]);

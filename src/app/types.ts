@@ -14,7 +14,12 @@ export type MetadataItem = {
   socials: Socials;
 };
 
-export type CanvasLayout = MetadataItem[][];
+export interface SquareProps {
+  size: number;
+  metadataItem: MetadataItem;
+}
+
+export type CanvasLayout = MetadataItem[];
 
 export type MetadataAccountCreatedEvent = {
   mint: web3.PublicKey;

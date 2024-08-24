@@ -17,14 +17,16 @@ export const updateBalance = async (
   onSetBalance: (balance: number) => void
 ) => {
   try {
+    const currentWalletAddress = owner.toString();
     const balanceCacheString = localStorage.getItem(mint);
     if (balanceCacheString) {
-      const { timestamp, balance } = JSON.parse(
+      const { timestamp, balance, walletAddress } = JSON.parse(
         balanceCacheString
       ) as BalanceCache;
       if (
         timestamp &&
         balance &&
+        walletAddress === currentWalletAddress &&
         Date.now() - timestamp < FETCH_BALANCE_INTERVAL_MS
       ) {
         onSetBalance(balance);
@@ -33,7 +35,7 @@ export const updateBalance = async (
     }
     if (mint === WSOL_ADDRESS) {
       const newBalance = await connection.getBalance(owner);
-      updateCache(mint, newBalance);
+      updateCache(mint, newBalance, currentWalletAddress);
       onSetBalance(newBalance);
     } else {
       const mintPubkey = new PublicKey(mint);
@@ -43,7 +45,7 @@ export const updateBalance = async (
       );
       const response = await connection.getTokenAccountBalance(address);
       const newBalance = response?.value?.uiAmount || 0;
-      updateCache(mint, newBalance);
+      updateCache(mint, newBalance, currentWalletAddress);
       onSetBalance(newBalance);
     }
   } catch (error) {
@@ -52,10 +54,15 @@ export const updateBalance = async (
   }
 };
 
-const updateCache = (mint: TokenAddress, balance: number) => {
+const updateCache = (
+  mint: TokenAddress,
+  balance: number,
+  walletAddress: string
+) => {
   const newBalanceCache: BalanceCache = {
     timestamp: Date.now(),
     balance,
+    walletAddress,
   };
   localStorage.setItem(mint, JSON.stringify(newBalanceCache));
 };

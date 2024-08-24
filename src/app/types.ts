@@ -107,4 +107,5 @@ export type TokenAddress =
 export type BalanceCache = {
   timestamp: number;
   balance: number;
+  walletAddress: string;
 };

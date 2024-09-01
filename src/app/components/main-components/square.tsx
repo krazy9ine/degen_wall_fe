@@ -7,9 +7,10 @@ export default function Square(squareProps: SquareProps) {
     <div
       style={{
         backgroundColor: `#${color}`,
-        width: `${size - 1}px`,
-        height: `${size - 1}px`,
-        border: "0.5px solid #616e96"
+        width: `${size}px`,
+        height: `${size}px`,
+        border: "0.5px solid #616e96",
+        flexShrink: 0,
       }}
     />
   );

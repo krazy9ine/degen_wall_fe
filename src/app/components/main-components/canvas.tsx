@@ -3,7 +3,11 @@
 import { EventListenerContext } from "@/app/context/EventListenerProvider";
 import { CanvasLayout, MetadataAccountParsed } from "@/app/types";
 import { useContext, useEffect, useRef, useState } from "react";
-import { getUpdatedCanvas, initAndGetCanvas } from "./canvas-util";
+import {
+  getDefaultCanvas,
+  getUpdatedCanvas,
+  initAndGetCanvas,
+} from "./canvas-util";
 import Square from "./square";
 import AnchorInterface from "@/app/web3/program";
 import { Connection } from "@solana/web3.js";
@@ -16,14 +20,18 @@ const SQUARE_MIN_SIZE = 12;
 export default function Canvas() {
   const setEventHandler = useContext(EventListenerContext);
   const isInitialRender = useRef(true);
-  const [canvasLayout, setCanvasLayout] = useState<CanvasLayout>([]);
-
+  const [canvasLayout, setCanvasLayout] = useState<CanvasLayout>(
+    getDefaultCanvas()
+  );
   const squareSize = Math.max(
     SQUARE_MIN_SIZE,
-    typeof window !== "undefined"
-      ? Math.floor((window.innerWidth * CANVAS_DISPLAY_RATIO) / PX_WIDTH)
-      : SQUARE_MIN_SIZE
+    Math.min(
+      Math.floor((window.innerWidth * CANVAS_DISPLAY_RATIO) / PX_WIDTH),
+      Math.floor((window.innerHeight * CANVAS_DISPLAY_RATIO) / PX_HEIGHT)
+    )
   );
+
+  console.log(squareSize);
 
   useEffect(() => {
     const updateCanvas = (event: MetadataAccountParsed) => {
@@ -44,24 +52,27 @@ export default function Canvas() {
   }, [canvasLayout, setEventHandler]);
 
   return (
-    <div
-      style={{
-        display: "grid",
-        gridTemplateRows: `repeat(${PX_HEIGHT}, ${squareSize}px)`,
-        gridTemplateColumns: `repeat(${PX_WIDTH}, ${squareSize}px)`,
-      }}
-    >
-      {canvasLayout.map((pixel, index) => {
-        const x = index % PX_WIDTH;
-        const y = Math.floor(index / PX_WIDTH);
-        return (
-          <Square
-            key={`${x}-${y}`}
-            size={squareSize}
-            metadataItem={pixel}
-          ></Square>
-        );
-      })}
+    <div id="canvas-readonly">
+      {Array.from({ length: PX_HEIGHT }).map((_, rowIndex) => (
+        <div
+          key={`row-${rowIndex}`}
+          style={{
+            display: "flex",
+          }}
+        >
+          {Array.from({ length: PX_WIDTH }).map((_, colIndex) => {
+            const index = rowIndex * PX_WIDTH + colIndex;
+            const pixel = canvasLayout[index];
+            return (
+              <Square
+                key={`${rowIndex}-${colIndex}`}
+                size={squareSize}
+                metadataItem={pixel}
+              />
+            );
+          })}
+        </div>
+      ))}
     </div>
   );
 }

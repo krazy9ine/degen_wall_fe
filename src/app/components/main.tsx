@@ -1,9 +1,9 @@
-import { Menu, Canvas } from "./main-components";
+import { EditLayout, Canvas } from "./main-components";
 
 export default function Main() {
   return (
     <main>
-      <Menu></Menu>
+      <EditLayout></EditLayout>
       <Canvas></Canvas>
     </main>
   );

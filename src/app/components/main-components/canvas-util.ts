@@ -15,6 +15,9 @@ const DEFAULT_WEBSITE = "https://cacat.com";
 const DEFAULT_TWITTER = "https://x.com";
 const DEFAULT_COMMUNITY = "https://t.me";
 const DEFAULT_IMAGE = "https://imgur.com";
+const DEFAULT_NAME = "cacat";
+const DEFAULT_TICKER = "CACAT";
+const DEFAULT_DESCRIPTION = "BLABLABLA";
 const DEFAULT_COLOR = "1b1d28";
 const URL_PREFIX = "https://";
 
@@ -41,6 +44,9 @@ const getDefaultSocials = (): Socials => {
     twitter: DEFAULT_TWITTER,
     community: DEFAULT_COMMUNITY,
     image: DEFAULT_IMAGE,
+    name: DEFAULT_NAME,
+    ticker: DEFAULT_TICKER,
+    description: DEFAULT_DESCRIPTION,
   };
 };
 
@@ -79,7 +85,17 @@ const parseTwitter = (twitter: string) => {
 };
 
 const parseSocials = (socials: Socials) => {
-  let { payer, token, website, twitter, community, image } = socials;
+  let {
+    payer,
+    token,
+    website,
+    twitter,
+    community,
+    image,
+    name,
+    ticker,
+    description,
+  } = socials;
   if (!payer)
     throw new Error(`Invalid payer for website ${website} and token ${token}`);
   if (!token) throw new Error(`Invalid token for payer ${payer}`);
@@ -89,14 +105,35 @@ const parseSocials = (socials: Socials) => {
   if (community) community = parseUrl(community, "community");
   if (image) image = parseUrl(image, "image");
   if (image) image = parseImage(image);
-  return { payer, token, website, twitter, community, image };
+  return {
+    payer,
+    token,
+    website,
+    twitter,
+    community,
+    image,
+    name,
+    ticker,
+    description,
+  };
 };
 
 export const getUpdatedCanvas = (
   account: MetadataAccountParsed,
   pixelsLeft?: number
 ): [CanvasLayout, number] => {
-  const { payer, token, data, website, twitter, community, image } = account;
+  const {
+    payer,
+    token,
+    data,
+    website,
+    twitter,
+    community,
+    image,
+    name,
+    ticker,
+    description,
+  } = account;
   const socialsRAW = {
     payer,
     token,
@@ -104,10 +141,14 @@ export const getUpdatedCanvas = (
     twitter,
     community,
     image,
+    name,
+    ticker,
+    description,
   };
   if (data.length !== MAX_DATA_SIZE)
     throw Error(`Invalid data size for ${socialsRAW}`);
   const socials = parseSocials(socialsRAW);
+  console.log(socials);
   for (let i = 0; i < MAX_DATA_SIZE; i += PX_SIZE) {
     const x = data[i];
     const y = data[i + 1];

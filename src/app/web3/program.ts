@@ -18,6 +18,8 @@ import { DegenWall } from "./degen_wall";
 import IDL from "./idl.json";
 import { AnchorWallet } from "@solana/wallet-adapter-react";
 
+const STRING_OFFSET = 4;
+
 export default class AnchorInterface {
   private program: Program<DegenWall>;
   public readonly MAX_DATA_SIZE: number;
@@ -25,6 +27,8 @@ export default class AnchorInterface {
   public readonly PX_WIDTH: number;
   public readonly PX_HEIGHT: number;
   public readonly DATA_DELIMITER: number;
+  public readonly MAX_SOCIALS_SIZE: number;
+  public readonly STRING_DELIMITER: string;
 
   constructor(connection: Connection, wallet?: AnchorWallet) {
     const provider = wallet
@@ -36,6 +40,8 @@ export default class AnchorInterface {
     this.PX_WIDTH = this.getNumberValue("pxWidth");
     this.PX_HEIGHT = this.getNumberValue("pxHeight");
     this.DATA_DELIMITER = this.getNumberValue("dataDelimiter");
+    this.MAX_SOCIALS_SIZE = this.getNumberValue("maxSocialsSize");
+    this.STRING_DELIMITER = this.getConstantValue("stringDelimiter");
   }
 
   updateProgram(connection: Connection, wallet: AnchorWallet) {
@@ -67,7 +73,15 @@ export default class AnchorInterface {
   }
 
   private getParsedEvent(event: MetadataAccountCreatedEvent) {
-    return this.getParsedAccount(event);
+    const { mint, timestamp, payer, token, data } = event;
+    return {
+      ...event,
+      mint: mint.toString(),
+      timestamp: Number(timestamp),
+      payer: payer.toString(),
+      token: token.toString(),
+      data: data,
+    };
   }
 
   private getNumberValue(key: ConstantType): number {
@@ -79,23 +93,17 @@ export default class AnchorInterface {
   }
 
   private getStringSize(name: StringType) {
-    const stringOffset = 4;
     let stringLength: number;
     switch (name) {
-      case "website":
-      case "community":
-      case "image":
-        stringLength = Number(this.getConstantValue("urlLength"));
-        break;
-      case "twitter":
-        stringLength = Number(this.getConstantValue("twitterLength"));
+      case "socials":
+        stringLength = this.MAX_SOCIALS_SIZE;
         break;
       default:
         throw new Error(`Invalid StringType for ${name}`);
     }
     if (isNaN(stringLength))
       throw new Error(`Constant ${name} is not a number`);
-    return stringOffset + stringLength;
+    return STRING_OFFSET + stringLength;
   }
 
   private getConstantValue(constantName: ConstantType) {
@@ -239,10 +247,9 @@ export default class AnchorInterface {
       32 + // payer
       // user input
       32 + // token
-      Number(this.getConstantValue("maxDataSize")) + // data -> max 100 pixels
-      4 * 4 + // 4 strings * offset
-      Number(this.getConstantValue("urlLength")) * 3 + // website + community + image
-      Number(this.getConstantValue("twitterLength")); // twitter
+      this.MAX_DATA_SIZE + // data -> max 100 pixels
+      STRING_OFFSET + // string offset
+      this.MAX_SOCIALS_SIZE; // all socials squashed in 1 string
     const accountsSerialized = await connection.getProgramAccounts(
       this.program.programId,
       {
@@ -272,14 +279,37 @@ export default class AnchorInterface {
   }
 
   private getParsedAccount(account: MetadataAccount): MetadataAccountParsed {
-    const { mint, timestamp, payer, token, data } = account;
+    const { mint, timestamp, payer, token, data, socials } = account;
+    const [
+      website,
+      twitter,
+      community,
+      image,
+      name,
+      ticker,
+      ...descriptionStrings
+    ] = socials.split(this.STRING_DELIMITER); // description might contain the STRING_DELIMITER
+    const description = descriptionStrings
+      ? descriptionStrings
+          .map((str, index) => {
+            if (index === str.length - 1) return str;
+            return str + this.STRING_DELIMITER;
+          })
+          .join()
+      : "";
     return {
-      ...account,
       mint: mint.toString(),
       timestamp: Number(timestamp),
       payer: payer.toString(),
       token: token.toString(),
       data: data,
+      website,
+      twitter,
+      community,
+      image,
+      name,
+      ticker,
+      description,
     };
   }
 }

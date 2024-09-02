@@ -7,6 +7,9 @@ export type Socials = {
   twitter?: string;
   community?: string;
   image?: string;
+  name?: string;
+  ticker?: string;
+  description?: string;
 };
 
 export type MetadataItem = {
@@ -31,6 +34,9 @@ export type MetadataAccountCreatedEvent = {
   twitter: string;
   community: string;
   image: string;
+  name: string;
+  ticker: string;
+  description: string;
 };
 
 export type MetadataAccountParsed = {
@@ -43,9 +49,19 @@ export type MetadataAccountParsed = {
   twitter: string;
   community: string;
   image: string;
+  name: string;
+  ticker: string;
+  description: string;
 };
 
-export type MetadataAccount = MetadataAccountCreatedEvent;
+export type MetadataAccount = {
+  mint: web3.PublicKey;
+  timestamp: BN;
+  payer: web3.PublicKey;
+  token: web3.PublicKey;
+  data: number[];
+  socials: string;
+};
 
 export type AnchorPrimitive =
   | "u8"
@@ -66,8 +82,8 @@ export type AnchorArray = [AnchorPrimitive, number];
 
 export type AnchorType = AnchorPrimitive | AnchorArray;
 
-const validStrings = ["website", "twitter", "community", "image"];
-export type StringType = "website" | "twitter" | "community" | "image";
+const validStrings = ["socials"];
+export type StringType = "socials";
 export const validateString = (str: string) => {
   if (!validStrings.includes(str))
     throw new Error(`Invalid string argument ${str}`);
@@ -75,14 +91,14 @@ export const validateString = (str: string) => {
 };
 
 export type ConstantType =
-  | "urlLength"
-  | "twitterLength"
   | "maxDataSize"
   | "version"
   | "pxSize"
   | "pxWidth"
   | "pxHeight"
-  | "dataDelimiter";
+  | "dataDelimiter"
+  | "maxSocialsSize"
+  | "stringDelimiter";
 
 export type FieldType = {
   name: string;

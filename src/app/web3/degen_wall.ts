@@ -778,8 +778,23 @@ export type DegenWall = {
     },
     {
       "code": 6017,
+      "name": "nameStringTooBig",
+      "msg": "Name string too big!"
+    },
+    {
+      "code": 6018,
+      "name": "tickerStringTooBig",
+      "msg": "Ticker string too big!"
+    },
+    {
+      "code": 6019,
       "name": "noHttpPrefix",
       "msg": "No Http Prefix!"
+    },
+    {
+      "code": 6020,
+      "name": "overallStringTooBig",
+      "msg": "Overall string too big!"
     }
   ],
   "types": [
@@ -820,6 +835,18 @@ export type DegenWall = {
           },
           {
             "name": "image",
+            "type": "string"
+          },
+          {
+            "name": "name",
+            "type": "string"
+          },
+          {
+            "name": "ticker",
+            "type": "string"
+          },
+          {
+            "name": "description",
             "type": "string"
           }
         ]
@@ -877,19 +904,7 @@ export type DegenWall = {
             }
           },
           {
-            "name": "website",
-            "type": "string"
-          },
-          {
-            "name": "twitter",
-            "type": "string"
-          },
-          {
-            "name": "community",
-            "type": "string"
-          },
-          {
-            "name": "image",
+            "name": "socials",
             "type": "string"
           }
         ]
@@ -939,6 +954,18 @@ export type DegenWall = {
           },
           {
             "name": "image",
+            "type": "string"
+          },
+          {
+            "name": "name",
+            "type": "string"
+          },
+          {
+            "name": "ticker",
+            "type": "string"
+          },
+          {
+            "name": "description",
             "type": "string"
           }
         ]
@@ -1028,6 +1055,16 @@ export type DegenWall = {
       "value": "100"
     },
     {
+      "name": "maxSocialsSize",
+      "type": "u8",
+      "value": "195"
+    },
+    {
+      "name": "nameLength",
+      "type": "u8",
+      "value": "30"
+    },
+    {
       "name": "pxHeight",
       "type": "u8",
       "value": "50"
@@ -1048,6 +1085,16 @@ export type DegenWall = {
       "value": "[100, 101, 103, 101, 110, 95, 119, 97, 108, 108]"
     },
     {
+      "name": "stringDelimiter",
+      "type": "string",
+      "value": "\"|\""
+    },
+    {
+      "name": "tickerLength",
+      "type": "u8",
+      "value": "10"
+    },
+    {
       "name": "treasuryPubkey",
       "type": "pubkey",
       "value": "AWJQAWxPE3hJz2XVrJDmBDdQk4pC2SjeKpLFhjUncCKM"
@@ -1058,14 +1105,9 @@ export type DegenWall = {
       "value": "15"
     },
     {
-      "name": "urlLength",
-      "type": "u8",
-      "value": "50"
-    },
-    {
       "name": "version",
       "type": "u8",
-      "value": "1"
+      "value": "2"
     },
     {
       "name": "wsolPubkey",

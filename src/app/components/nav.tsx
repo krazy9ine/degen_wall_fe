@@ -3,6 +3,7 @@ import {
   SelectTokenDropdown,
   TokenBalanceDisplay,
 } from "../common";
+import { SettingsMenu } from "./nav-components";
 
 export default function Nav() {
   return (
@@ -10,6 +11,7 @@ export default function Nav() {
       <ConnectWalletButton></ConnectWalletButton>
       <SelectTokenDropdown></SelectTokenDropdown>
       <TokenBalanceDisplay></TokenBalanceDisplay>
+      <SettingsMenu></SettingsMenu>
     </nav>
   );
 }

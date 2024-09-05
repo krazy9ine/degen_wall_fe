@@ -1,4 +1,3 @@
-import { timeStamp } from "console";
 import { FETCH_BALANCE_INTERVAL_MS, WSOL_ADDRESS } from "../constants";
 import { BalanceCache, TokenAddress } from "../types";
 import { PublicKey, Connection } from "@solana/web3.js";

@@ -5,6 +5,7 @@ import AppWalletProvider from "./AppWalletProvider";
 import { WalletAdapterNetwork } from "@solana/wallet-adapter-base";
 import React, { useState, createContext, useEffect } from "react";
 import { isHealthyEndpoint } from "../web3/misc";
+import { RPC_URL_KEY } from "../constants";
 
 const NETWORK = WalletAdapterNetwork.Devnet;
 
@@ -21,7 +22,7 @@ interface RPCProviderProps {
 
 export default function RPCProvider({ children }: RPCProviderProps) {
   const [endpoint, setEndpoint] = useState(
-    localStorage.getItem("RPC_URL") || clusterApiUrl(NETWORK)
+    localStorage.getItem(RPC_URL_KEY) || clusterApiUrl(NETWORK)
   );
 
   const setRPC = async (url = "") => {

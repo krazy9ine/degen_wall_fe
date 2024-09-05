@@ -1,3 +1,4 @@
+import { RPC_URL_KEY } from "@/app/constants";
 import { RPCContext } from "@/app/context/RPCProvider";
 import { Backdrop, Switch } from "@mui/material";
 import { useContext, useEffect, useRef, useState } from "react";
@@ -7,11 +8,11 @@ export default function SettingsMenu() {
   const menuRef = useRef(null);
   const inputRef = useRef<HTMLInputElement>(null);
   const [isCustomRPC, setIsCustomRPC] = useState(
-    localStorage.getItem("RPC_URL") ? true : false
+    localStorage.getItem(RPC_URL_KEY) ? true : false
   );
   const { setRPC } = useContext(RPCContext);
   const [inputValue, setInputValue] = useState(
-    localStorage.getItem("RPC_URL") || ""
+    localStorage.getItem(RPC_URL_KEY) || ""
   );
 
   const handleOpen = () => {
@@ -20,7 +21,7 @@ export default function SettingsMenu() {
 
   const handleClose = () => {
     setOpen(false);
-    const RPC_URL = localStorage.getItem("RPC_URL") || "";
+    const RPC_URL = localStorage.getItem(RPC_URL_KEY) || "";
     RPC_URL ? setIsCustomRPC(true) : setIsCustomRPC(false);
     setInputValue(RPC_URL);
   };
@@ -30,7 +31,7 @@ export default function SettingsMenu() {
     if (isCustomRPC) {
       // keep in mind that even if 1 line above we toggled the bool, it's still the old value in this context
       setInputValue("");
-      localStorage.setItem("RPC_URL", "");
+      localStorage.setItem(RPC_URL_KEY, "");
     }
   };
 
@@ -45,13 +46,13 @@ export default function SettingsMenu() {
       if (!everythingsAllright) {
         setInputValue("");
         toggleSwitch();
-        localStorage.setItem("RPC_URL", "");
-      } else localStorage.setItem("RPC_URL", inputRef.current?.value);
+        localStorage.setItem(RPC_URL_KEY, "");
+      } else localStorage.setItem(RPC_URL_KEY, inputRef.current?.value);
       return;
     }
     setRPC();
     setInputValue("");
-    localStorage.setItem("RPC_URL", "");
+    localStorage.setItem(RPC_URL_KEY, "");
     setOpen(false);
     if (isCustomRPC) toggleSwitch();
   };

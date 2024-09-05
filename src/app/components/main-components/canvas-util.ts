@@ -1,4 +1,4 @@
-import { WSOL_ADDRESS } from "@/app/constants";
+import { SERVER_URL, WSOL_ADDRESS } from "@/app/constants";
 import {
   CanvasLayout,
   MetadataAccountParsed,
@@ -176,7 +176,7 @@ export const getUpdatedCanvas = (
 
 const fetchLatestCanvas = async () => {
   try {
-    const response = await fetch("http://localhost:3001");
+    const response = await fetch(SERVER_URL);
     if (!response.ok) {
       throw new Error(`HTTP error! Status: ${response.status}`);
     }

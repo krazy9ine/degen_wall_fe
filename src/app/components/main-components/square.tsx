@@ -12,7 +12,6 @@ export default function Square(squareProps: SquareProps) {
   const onHover = () => {
     setOpacity(HOVER_OPACITY);
     onSetSocials(socials);
-    console.log(socials);
   };
 
   const onUnhover = () => {

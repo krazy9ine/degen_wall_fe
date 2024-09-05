@@ -3,25 +3,34 @@
 import { clusterApiUrl } from "@solana/web3.js";
 import AppWalletProvider from "./AppWalletProvider";
 import { WalletAdapterNetwork } from "@solana/wallet-adapter-base";
-import React, { useState, createContext } from "react";
+import React, { useState, createContext, useEffect } from "react";
+import { isHealthyEndpoint } from "../web3/misc";
 
 const NETWORK = WalletAdapterNetwork.Devnet;
 
 interface RPCContextType {
-  setRPC: (url?: string) => void;
+  setRPC: (url?: string) => Promise<boolean>;
 }
 
-export const RPCContext = createContext<RPCContextType | undefined>(undefined);
+//@ts-ignore
+export const RPCContext = createContext<RPCContextType>(undefined);
 
 interface RPCProviderProps {
   children: React.ReactNode;
 }
 
 export default function RPCProvider({ children }: RPCProviderProps) {
-  const [endpoint, setEndpoint] = useState(clusterApiUrl(NETWORK));
+  const [endpoint, setEndpoint] = useState(
+    localStorage.getItem("RPC_URL") || clusterApiUrl(NETWORK)
+  );
 
-  const setRPC = (url = clusterApiUrl(NETWORK)) => {
-    setEndpoint(url);
+  const setRPC = async (url = "") => {
+    if (url && (await isHealthyEndpoint(url))) {
+      setEndpoint(url);
+      return true;
+    }
+    setEndpoint(clusterApiUrl(NETWORK));
+    return false;
   };
 
   return (

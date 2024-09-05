@@ -7,7 +7,7 @@ import { SettingsMenu } from "./nav-components";
 
 export default function Nav() {
   return (
-    <nav className="flex">
+    <nav className="flex gap-4">
       <ConnectWalletButton></ConnectWalletButton>
       <SelectTokenDropdown></SelectTokenDropdown>
       <TokenBalanceDisplay></TokenBalanceDisplay>

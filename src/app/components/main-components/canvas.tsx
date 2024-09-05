@@ -85,13 +85,31 @@ export default function Canvas() {
         id="socials-tab"
         style={{ visibility: socials?.payer ? "visible" : "hidden" }}
       >
-        <p>
+        <p
+          style={{
+            display: socials?.name || socials?.ticker ? "block" : "none",
+          }}
+        >
           {socials?.name} ${socials?.ticker}
         </p>
-        <div>
+        <div style={{ display: socials?.image ? "block" : "none" }}>
           <img src={socials?.image} alt="image"></img>
         </div>
-        <p>{socials?.description}</p>
+        <p style={{ display: socials?.description ? "block" : "none" }}>
+          {socials?.description}
+        </p>
+        <p style={{ display: socials?.website ? "block" : "none" }}>
+          Website: {socials?.website}
+        </p>
+        <p style={{ display: socials?.twitter ? "block" : "none" }}>
+          Twitter: {socials?.twitter}
+        </p>
+        <p style={{ display: socials?.community ? "block" : "none" }}>
+          Community: {socials?.community}
+        </p>
+        <p style={{ display: socials?.token ? "block" : "none" }}>
+          Chart: https://dexscreener.com/solana/{socials?.token}
+        </p>
       </div>
     </div>
   );

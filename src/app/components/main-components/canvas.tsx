@@ -31,8 +31,6 @@ export default function Canvas() {
     )
   );
 
-  console.log(squareSize);
-
   useEffect(() => {
     const updateCanvas = (event: MetadataAccountParsed) => {
       const [newCanvas] = getUpdatedCanvas(event);

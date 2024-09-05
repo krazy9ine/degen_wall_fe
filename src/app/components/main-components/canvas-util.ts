@@ -148,7 +148,6 @@ export const getUpdatedCanvas = (
   if (data.length !== MAX_DATA_SIZE)
     throw Error(`Invalid data size for ${socialsRAW}`);
   const socials = parseSocials(socialsRAW);
-  console.log(socials);
   for (let i = 0; i < MAX_DATA_SIZE; i += PX_SIZE) {
     const x = data[i];
     const y = data[i + 1];

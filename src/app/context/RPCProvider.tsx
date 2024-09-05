@@ -3,7 +3,7 @@
 import { clusterApiUrl } from "@solana/web3.js";
 import AppWalletProvider from "./AppWalletProvider";
 import { WalletAdapterNetwork } from "@solana/wallet-adapter-base";
-import React, { useState, createContext, useEffect } from "react";
+import React, { useState, createContext } from "react";
 import { isHealthyEndpoint } from "../web3/misc";
 import { RPC_URL_KEY } from "../constants";
 

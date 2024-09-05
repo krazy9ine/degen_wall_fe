@@ -5,6 +5,7 @@ import {
   MetadataItem,
   Socials,
 } from "@/app/types";
+import { isHealthyEndpoint } from "@/app/web3/misc";
 import AnchorInterface from "@/app/web3/program";
 import { Connection } from "@solana/web3.js";
 import urlRegex from "url-regex";
@@ -180,7 +181,7 @@ const fetchLatestCanvas = async () => {
     if (!response.ok) {
       throw new Error(`HTTP error! Status: ${response.status}`);
     }
-    const canvas = await response.json();
+    const canvas = (await response.json()) as CanvasLayout;
     return canvas;
   } catch (error) {
     console.error("Error fetching canvas data:", error);
@@ -188,7 +189,76 @@ const fetchLatestCanvas = async () => {
   }
 };
 
-export const initAndGetCanvas = async () => {
-  canvas = await fetchLatestCanvas();
+const updateCanvas = (
+  canvas: CanvasLayout,
+  account: MetadataAccountParsed,
+  pixelsLeft?: number
+) => {
+  const { payer, token, data, website, twitter, community, image } = account;
+  const socialsRAW = {
+    payer,
+    token,
+    website,
+    twitter,
+    community,
+    image,
+  };
+  if (data.length !== MAX_DATA_SIZE)
+    throw Error(`Invalid data size for ${socialsRAW}`);
+  const socials = parseSocials(socialsRAW);
+  for (let i = 0; i < MAX_DATA_SIZE; i += PX_SIZE) {
+    const x = data[i];
+    const y = data[i + 1];
+    const R = data[i + 2];
+    const G = data[i + 3];
+    const B = data[i + 4];
+    if (x === DATA_DELIMITER) break;
+    if (x >= PX_WIDTH || x < 0) throw new Error(`Invalid x ${x} at index ${i}`);
+    if (y >= PX_HEIGHT || y < 0) {
+      throw new Error(`Invalid y ${y} at index ${i}`);
+    }
+    if (R < 0 || R > 255) throw new Error(`Invalid R ${R} at index ${i}`);
+    if (G < 0 || G > 255) throw new Error(`Invalid G ${G} at index ${i}`);
+    if (B < 0 || B > 255) throw new Error(`Invalid B ${B} at index ${i}`);
+    const index = x + y * PX_WIDTH;
+    if (pixelsLeft && canvas[index].socials.token === DEFAULT_TOKEN)
+      pixelsLeft--;
+    canvas[index] = {
+      color: R.toString(16) + G.toString(16) + B.toString(16),
+      socials,
+    };
+    if (pixelsLeft && pixelsLeft <= 0) break;
+  }
+  return pixelsLeft ? pixelsLeft : 0;
+};
+
+const getLatestCanvas = async (endpoint: string) => {
+  const canvas = getDefaultCanvas();
+  const anchorInterface = new AnchorInterface(new Connection(endpoint));
+  const accounts = await anchorInterface.getAllAccounts(endpoint);
+  let pixelsLeft = PX_WIDTH * PX_WIDTH;
+  if (accounts) {
+    for (const account of accounts) {
+      try {
+        pixelsLeft = updateCanvas(canvas, account, pixelsLeft);
+        if (pixelsLeft <= 0) break;
+      } catch (error) {
+        console.error(`Error for account ${JSON.stringify(account)}: ${error}`);
+      }
+    }
+  }
   return canvas;
+};
+
+export const initAndGetCanvas = async (endpoint?: string) => {
+  try {
+    if (endpoint && (await isHealthyEndpoint(endpoint))) {
+      return await getLatestCanvas(endpoint);
+    }
+    canvas = await fetchLatestCanvas();
+    return canvas;
+  } catch (error) {
+    console.error(`Error retrieving canvas: ${error}`);
+    return getDefaultCanvas();
+  }
 };

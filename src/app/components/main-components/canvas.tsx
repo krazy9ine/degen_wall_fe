@@ -11,6 +11,7 @@ import {
 import Square from "./square";
 import AnchorInterface from "@/app/web3/program";
 import { Connection } from "@solana/web3.js";
+import { RPC_URL_KEY } from "@/app/constants";
 
 const anchorInterface = new AnchorInterface(null as unknown as Connection);
 const { PX_HEIGHT, PX_WIDTH } = anchorInterface;
@@ -38,7 +39,8 @@ export default function Canvas() {
     };
 
     const onInitAndGetCanvas = async () => {
-      const initialCanvas = await initAndGetCanvas();
+      const endpoint = localStorage.getItem(RPC_URL_KEY) || "";
+      const initialCanvas = await initAndGetCanvas(endpoint);
       setCanvasLayout(initialCanvas);
     };
 

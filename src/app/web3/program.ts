@@ -61,8 +61,8 @@ export default class AnchorInterface {
     );
   }
 
-  async getAllAccounts() {
-    const accountsDeserialized = await this.getAccountsDeserialized();
+  async getAllAccounts(endpoint: string) {
+    const accountsDeserialized = await this.getAccountsDeserialized(endpoint);
     if (!accountsDeserialized?.length) {
       console.log("There are no existing accounts!");
       return null;
@@ -228,11 +228,10 @@ export default class AnchorInterface {
     return borsh.struct(structArray).decode(data);
   }
 
-  private async getAccountsDeserialized(): Promise<MetadataAccount[]> {
-    const { ANCHOR_PROVIDER_URL } = process.env;
-    if (!ANCHOR_PROVIDER_URL)
-      throw new Error(`ANCHOR_PROVIDER_URL not defined`);
-    const connection = new Connection(ANCHOR_PROVIDER_URL);
+  private async getAccountsDeserialized(
+    endpoint: string
+  ): Promise<MetadataAccount[]> {
+    const connection = new Connection(endpoint);
     const accountStruct: AccountStruct = "metadataAccount";
     const startField = "mint";
     const fieldToMatch = "version";

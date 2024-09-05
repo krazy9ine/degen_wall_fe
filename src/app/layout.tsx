@@ -1,12 +1,12 @@
 import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 import "./globals.css";
-import AppWalletProvider from "./context/AppWalletProvider";
 import { WalletChangeProvider } from "./context/WalletChangeProvider";
 import { SelectTokenProvider } from "./context/SelectTokenProvider";
 import { TokenBalanceProvider } from "./context/TokenBalanceProvider";
 import { AnchorProvider } from "./context/AnchorProvider";
 import { EventListenerProvider } from "./context/EventListenerProvider";
+import RPCProvider from "./context/RPCProvider";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -24,7 +24,7 @@ export default function RootLayout({
     <html lang="en">
       <body className={inter.className}>
         {
-          <AppWalletProvider>
+          <RPCProvider>
             <EventListenerProvider>
               <WalletChangeProvider>
                 <AnchorProvider>
@@ -34,7 +34,7 @@ export default function RootLayout({
                 </AnchorProvider>
               </WalletChangeProvider>
             </EventListenerProvider>
-          </AppWalletProvider>
+          </RPCProvider>
         }
       </body>
     </html>

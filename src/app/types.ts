@@ -20,6 +20,7 @@ export type MetadataItem = {
 export interface SquareProps {
   size: number;
   metadataItem: MetadataItem;
+  onSetSocials: (socials: Socials) => void;
 }
 
 export type CanvasLayout = MetadataItem[];

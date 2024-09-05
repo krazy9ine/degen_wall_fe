@@ -1,7 +1,7 @@
 "use client";
 
 import { EventListenerContext } from "@/app/context/EventListenerProvider";
-import { CanvasLayout, MetadataAccountParsed } from "@/app/types";
+import { CanvasLayout, MetadataAccountParsed, Socials } from "@/app/types";
 import { useContext, useEffect, useRef, useState } from "react";
 import {
   getDefaultCanvas,
@@ -24,6 +24,7 @@ export default function Canvas() {
   const [canvasLayout, setCanvasLayout] = useState<CanvasLayout>(
     getDefaultCanvas()
   );
+  const [socials, setSocials] = useState<Socials>();
   const squareSize = Math.max(
     SQUARE_MIN_SIZE,
     Math.min(
@@ -51,28 +52,47 @@ export default function Canvas() {
     }
   }, [canvasLayout, setEventHandler]);
 
+  const onSetSocials = (socials: Socials) => {
+    setSocials(socials);
+  };
+
   return (
-    <div id="canvas-readonly">
-      {Array.from({ length: PX_HEIGHT }).map((_, rowIndex) => (
-        <div
-          key={`row-${rowIndex}`}
-          style={{
-            display: "flex",
-          }}
-        >
-          {Array.from({ length: PX_WIDTH }).map((_, colIndex) => {
-            const index = rowIndex * PX_WIDTH + colIndex;
-            const pixel = canvasLayout[index];
-            return (
-              <Square
-                key={`${rowIndex}-${colIndex}`}
-                size={squareSize}
-                metadataItem={pixel}
-              />
-            );
-          })}
+    <div id="canvas wrapper" className="flex">
+      <div id="canvas-readonly">
+        {Array.from({ length: PX_HEIGHT }).map((_, rowIndex) => (
+          <div
+            key={`row-${rowIndex}`}
+            style={{
+              display: "flex",
+            }}
+          >
+            {Array.from({ length: PX_WIDTH }).map((_, colIndex) => {
+              const index = rowIndex * PX_WIDTH + colIndex;
+              const pixel = canvasLayout[index];
+              return (
+                <Square
+                  key={`${rowIndex}-${colIndex}`}
+                  size={squareSize}
+                  metadataItem={pixel}
+                  onSetSocials={onSetSocials}
+                />
+              );
+            })}
+          </div>
+        ))}
+      </div>
+      <div
+        id="socials-tab"
+        style={{ visibility: socials?.payer ? "visible" : "hidden" }}
+      >
+        <p>
+          {socials?.name} ${socials?.ticker}
+        </p>
+        <div>
+          <img src={socials?.image} alt="image"></img>
         </div>
-      ))}
+        <p>{socials?.description}</p>
+      </div>
     </div>
   );
 }

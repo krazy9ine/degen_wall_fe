@@ -18,11 +18,16 @@ export const EventListenerProvider = ({
   const anchorInterface = useRef<AnchorInterface>();
   const isInitialRender = useRef(true);
   const onEvent = useRef<(event: MetadataAccountParsed) => void>();
+  const endpoint = useRef<string>();
   useEffect(() => {
     if (isInitialRender.current) {
       isInitialRender.current = false;
       anchorInterface.current = new AnchorInterface(connection);
       anchorInterface.current.registerEventListener(onEvent.current);
+      endpoint.current = connection.rpcEndpoint;
+    } else if (endpoint.current !== connection.rpcEndpoint) {
+      anchorInterface.current?.unregisterEventListener();
+      anchorInterface.current?.registerEventListener(onEvent.current);
     }
   }, [connection]);
 

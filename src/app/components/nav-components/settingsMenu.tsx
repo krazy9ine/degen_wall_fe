@@ -40,7 +40,7 @@ export default function SettingsMenu() {
 
   const save = async () => {
     if (isCustomRPC && inputRef.current?.value) {
-      handleClose();
+      setOpen(false);
       const everythingsAllright = await setRPC(inputRef.current?.value);
       if (!everythingsAllright) {
         setInputValue("");
@@ -52,7 +52,7 @@ export default function SettingsMenu() {
     setRPC();
     setInputValue("");
     localStorage.setItem("RPC_URL", "");
-    handleClose();
+    setOpen(false);
     if (isCustomRPC) toggleSwitch();
   };
 

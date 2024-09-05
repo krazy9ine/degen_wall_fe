@@ -22,6 +22,7 @@ const STRING_OFFSET = 4;
 
 export default class AnchorInterface {
   private program: Program<DegenWall>;
+  private listener = 0;
   public readonly MAX_DATA_SIZE: number;
   public readonly PX_SIZE: number;
   public readonly PX_WIDTH: number;
@@ -50,7 +51,7 @@ export default class AnchorInterface {
   }
 
   registerEventListener(callback?: (event: MetadataAccountParsed) => void) {
-    this.program.addEventListener(
+    this.listener = this.program.addEventListener(
       "metadataAccountCreated",
       (eventRAW, _slot) => {
         if (callback) {
@@ -59,6 +60,16 @@ export default class AnchorInterface {
         }
       }
     );
+  }
+
+  unregisterEventListener() {
+    try {
+      this.program.removeEventListener(this.listener);
+    } catch (error) {
+      console.error(
+        `Error unregistering event with listener no ${this.listener}`
+      );
+    }
   }
 
   async getAllAccounts(endpoint: string) {

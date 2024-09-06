@@ -7,13 +7,13 @@ export default function SettingsMenu() {
   const [open, setOpen] = useState(false);
   const menuRef = useRef(null);
   const inputRef = useRef<HTMLInputElement>(null);
-  const [isCustomRPC, setIsCustomRPC] = useState(
-    localStorage.getItem(RPC_URL_KEY) ? true : false
-  );
+  const RPC_URL =
+    typeof window !== "undefined"
+      ? localStorage.getItem(RPC_URL_KEY) || ""
+      : "";
+  const [isCustomRPC, setIsCustomRPC] = useState(RPC_URL ? true : false);
   const { setRPC } = useContext(RPCContext);
-  const [inputValue, setInputValue] = useState(
-    localStorage.getItem(RPC_URL_KEY) || ""
-  );
+  const [inputValue, setInputValue] = useState(RPC_URL || "");
 
   const handleOpen = () => {
     setOpen(true);

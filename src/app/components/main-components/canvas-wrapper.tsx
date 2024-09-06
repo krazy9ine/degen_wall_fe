@@ -12,24 +12,27 @@ import Square from "./square";
 import AnchorInterface from "@/app/web3/program";
 import { Connection } from "@solana/web3.js";
 import { RPC_URL_KEY } from "@/app/constants";
+import useWindowDimensions from "@/app/hooks/useWindowDimensions";
 
 const anchorInterface = new AnchorInterface(null as unknown as Connection);
 const { PX_HEIGHT, PX_WIDTH } = anchorInterface;
 const CANVAS_DISPLAY_RATIO = 0.8;
-const SQUARE_MIN_SIZE = 12;
+const SQUARE_MIN_SIZE = 1;
 
-export default function Canvas() {
+export default function CanvasWrapper() {
   const setEventHandler = useContext(EventListenerContext);
   const isInitialRender = useRef(true);
   const [canvasLayout, setCanvasLayout] = useState<CanvasLayout>(
     getDefaultCanvas()
   );
   const [socials, setSocials] = useState<Socials>();
+  const { height, width } = useWindowDimensions();
+
   const squareSize = Math.max(
     SQUARE_MIN_SIZE,
     Math.min(
-      Math.floor((window.innerWidth * CANVAS_DISPLAY_RATIO) / PX_WIDTH),
-      Math.floor((window.innerHeight * CANVAS_DISPLAY_RATIO) / PX_HEIGHT)
+      Math.floor((width * CANVAS_DISPLAY_RATIO) / PX_WIDTH),
+      Math.floor((height * CANVAS_DISPLAY_RATIO) / PX_HEIGHT)
     )
   );
 

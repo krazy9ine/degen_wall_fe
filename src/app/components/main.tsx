@@ -1,10 +1,10 @@
-import { EditLayout, Canvas } from "./main-components";
+import { EditLayout, CanvasWrapper } from "./main-components";
 
 export default function Main() {
   return (
     <main>
       <EditLayout></EditLayout>
-      <Canvas></Canvas>
+      <CanvasWrapper></CanvasWrapper>
     </main>
   );
 }

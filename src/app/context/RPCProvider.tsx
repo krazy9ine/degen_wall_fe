@@ -8,6 +8,7 @@ import { isHealthyEndpoint } from "../web3/misc";
 import { RPC_URL_KEY } from "../constants";
 
 const NETWORK = WalletAdapterNetwork.Devnet;
+const CLUSTER_URL = clusterApiUrl(NETWORK);
 
 interface RPCContextType {
   setRPC: (url?: string) => Promise<boolean>;
@@ -22,7 +23,9 @@ interface RPCProviderProps {
 
 export default function RPCProvider({ children }: RPCProviderProps) {
   const [endpoint, setEndpoint] = useState(
-    localStorage.getItem(RPC_URL_KEY) || clusterApiUrl(NETWORK)
+    typeof window !== "undefined"
+      ? localStorage.getItem(RPC_URL_KEY) || CLUSTER_URL
+      : CLUSTER_URL
   );
 
   const setRPC = async (url = "") => {
@@ -30,7 +33,7 @@ export default function RPCProvider({ children }: RPCProviderProps) {
       setEndpoint(url);
       return true;
     }
-    setEndpoint(clusterApiUrl(NETWORK));
+    setEndpoint(CLUSTER_URL);
     return false;
   };
 

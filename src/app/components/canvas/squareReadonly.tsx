@@ -1,10 +1,10 @@
-import { SquareProps } from "@/app/types";
+import { SquareReadonlyProps } from "@/app/types";
 import { useState } from "react";
 
 const DEFAULT_OPACITY = 1;
 const HOVER_OPACITY = 0.25;
 
-export default function Square(squareProps: SquareProps) {
+export default function SquareReadonly(squareProps: SquareReadonlyProps) {
   const { size, metadataItem, onSetSocials } = squareProps;
   const { color, socials } = metadataItem;
   const [opacity, setOpacity] = useState(DEFAULT_OPACITY);

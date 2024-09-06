@@ -17,10 +17,38 @@ export type MetadataItem = {
   socials: Socials;
 };
 
-export interface SquareProps {
+export interface CanvasProps {
+  displayRatio: number;
+  squareMinSize: number;
+  pxWidth: number;
+  pxHeight: number;
+  isEditMode: boolean;
+  canvasLayout: CanvasLayout;
+}
+
+interface SquareProps {
   size: number;
   metadataItem: MetadataItem;
+}
+
+export interface SquareReadonlyProps extends SquareProps {
   onSetSocials: (socials: Socials) => void;
+}
+
+export interface SquareEditProps extends SquareProps {
+  onSetSquareColor: () => void;
+}
+
+export type DrawItem = {
+  color: string;
+  indexes: number[];
+};
+
+export interface CanvasWrapperProps {
+  isEditMode: boolean;
+  addDrawItem: (drawItem: DrawItem) => void;
+  drawItems: DrawItem[];
+  drawColor: string;
 }
 
 export type CanvasLayout = MetadataItem[];

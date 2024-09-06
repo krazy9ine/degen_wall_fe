@@ -39,16 +39,10 @@ export interface SquareEditProps extends SquareProps {
   onSetSquareColor: () => void;
 }
 
-export type DrawItem = {
-  color: string;
-  indexes: number[];
-};
-
 export interface CanvasWrapperProps {
   isEditMode: boolean;
-  addDrawItem: (drawItem: DrawItem) => void;
-  drawItems: DrawItem[];
   drawColor: string;
+  isEraseMode: boolean;
 }
 
 export type CanvasLayout = MetadataItem[];

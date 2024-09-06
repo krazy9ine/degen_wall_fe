@@ -6,16 +6,16 @@ import SquareEdit from "./squareEdit";
 export default function CanvasEdit(props: CanvasWrapperProps & CanvasProps) {
   const {
     isEditMode,
-    addDrawItem,
-    drawItems,
     drawColor,
     displayRatio,
     pxHeight,
     pxWidth,
     squareMinSize,
     canvasLayout,
+    isEraseMode,
   } = props;
   const [canvas, setCanvas] = useState<CanvasLayout>(canvasLayout);
+  const originalCanvas = useRef<CanvasLayout>([]);
   const { height, width } = useWindowDimensions();
   const isMouseDown = useRef(false);
   const isInitialRender = useRef(true);
@@ -35,9 +35,11 @@ export default function CanvasEdit(props: CanvasWrapperProps & CanvasProps) {
     if (isEditMode && isInitialRender.current) {
       isInitialRender.current = false;
       onSetCanvas(canvasLayout);
+      originalCanvas.current = canvasLayout;
     } else if (!isEditMode && !isInitialRender.current) {
       isInitialRender.current = true;
       onSetCanvas(canvasLayout);
+      originalCanvas.current = [];
     }
   }, [isEditMode, canvasLayout]);
 
@@ -77,7 +79,9 @@ export default function CanvasEdit(props: CanvasWrapperProps & CanvasProps) {
                   const canvasCopy = JSON.parse(
                     JSON.stringify(canvas)
                   ) as CanvasLayout;
-                  canvasCopy[index].color = drawColor;
+                  canvasCopy[index].color = isEraseMode
+                    ? originalCanvas.current[index].color
+                    : drawColor;
                   onSetCanvas(canvasCopy);
                 }
               };

@@ -1,39 +1,40 @@
 import { useState } from "react";
 import { CanvasWrapper } from "./canvas";
-import { DrawItem } from "../types";
 
 export default function Main() {
   const [isEditMode, setIsEditMode] = useState(false);
-  const [drawItems, setDrawItems] = useState<DrawItem[]>([]);
+  const [isEraseMode, setIsEraseMode] = useState(false);
   const [drawColor, setDrawColor] = useState("ffffff");
+
+  const enableEraseMode = () => {
+    setIsEraseMode(true);
+  };
+
   const enterEditMode = () => {
-    if (!isEditMode) setIsEditMode(true);
+    if (!isEditMode) {
+      setIsEditMode(true);
+    }
+    setIsEraseMode(false);
   };
 
   const exitEditMode = () => {
     if (isEditMode) {
-      setDrawItems([]);
       setIsEditMode(false);
     }
-  };
-
-  const addDrawItem = (drawItem: DrawItem) => {
-    setDrawItems((prevItems) => [...prevItems, drawItem]);
-  };
-
-  const removeLastDrawItem = () => {
-    setDrawItems((prevItems) => prevItems.slice(0, -1));
+    setIsEraseMode(false);
   };
 
   return (
     <main>
       <div className="flex gap-2">
-        <button disabled={isEditMode} onClick={enterEditMode}>
+        <button disabled={isEditMode && !isEraseMode} onClick={enterEditMode}>
           Pencil
         </button>
         <span>Color</span>
         <button>PickColor</button>
-        <button>Undo</button>
+        <button disabled={!isEditMode || isEraseMode} onClick={enableEraseMode}>
+          Erase
+        </button>
         <button>Upload</button>
         <button disabled={!isEditMode} onClick={exitEditMode}>
           Exit
@@ -41,9 +42,8 @@ export default function Main() {
       </div>
       <CanvasWrapper
         isEditMode={isEditMode}
-        addDrawItem={addDrawItem}
-        drawItems={drawItems}
         drawColor={drawColor}
+        isEraseMode={isEraseMode}
       ></CanvasWrapper>
     </main>
   );

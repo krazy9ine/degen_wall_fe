@@ -1,3 +1,4 @@
+import { SQUARE_BORDER_COLOR } from "@/app/constants";
 import { SquareReadonlyProps } from "@/app/types";
 import { useState } from "react";
 
@@ -24,7 +25,7 @@ export default function SquareReadonly(squareProps: SquareReadonlyProps) {
         backgroundColor: `#${color}`,
         width: `${size}px`,
         height: `${size}px`,
-        border: "0.5px solid #616e96",
+        border: `0.5px solid #${SQUARE_BORDER_COLOR}`,
         flexShrink: 0,
         opacity: opacity,
       }}

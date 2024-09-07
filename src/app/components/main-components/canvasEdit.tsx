@@ -1,13 +1,12 @@
 import { CanvasLayout, CanvasProps, CanvasWrapperProps } from "@/app/types";
 import { useEffect, useRef, useState } from "react";
 import SquareEdit from "./squareEdit";
+import { PX_HEIGHT, PX_WIDTH } from "@/app/constants";
 
 export default function CanvasEdit(props: CanvasWrapperProps & CanvasProps) {
   const {
     isEditMode,
     drawColor,
-    pxHeight,
-    pxWidth,
     squareSize,
     canvasLayout,
     isEraseMode,
@@ -56,15 +55,15 @@ export default function CanvasEdit(props: CanvasWrapperProps & CanvasProps) {
       style={{ opacity: isEditMode ? 1 : 0, zIndex: isEditMode ? 1 : -1 }}
     >
       <div id="canvas-edit">
-        {Array.from({ length: pxHeight }).map((_, rowIndex) => (
+        {Array.from({ length: PX_HEIGHT }).map((_, rowIndex) => (
           <div
             key={`row-${rowIndex}`}
             style={{
               display: "flex",
             }}
           >
-            {Array.from({ length: pxWidth }).map((_, colIndex) => {
-              const index = rowIndex * pxWidth + colIndex;
+            {Array.from({ length: PX_WIDTH }).map((_, colIndex) => {
+              const index = rowIndex * PX_WIDTH + colIndex;
               const pixel = canvas[index];
               const onSetSquareColor = (isClick = false) => {
                 if (isMouseDown.current || isClick) {

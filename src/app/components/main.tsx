@@ -3,17 +3,10 @@ import { CanvasWrapper, SocialsSection } from "./main-components";
 import { ColorPicker } from "primereact/colorpicker";
 import { Backdrop } from "@mui/material";
 import { ColoredPixelsDict, Socials } from "../types";
-import { ERASE_PIXELS_CODE } from "../constants";
-import AnchorInterface from "../web3/program";
-import { Connection } from "@solana/web3.js";
-import useWindowDimensions from "../hooks/useWindowDimensions";
+import { ERASE_PIXELS_CODE, MAX_DATA_SIZE, PX_SIZE } from "../constants";
 
-const anchorInterface = new AnchorInterface(null as unknown as Connection);
-const { MAX_DATA_SIZE, PX_SIZE, PX_HEIGHT, PX_WIDTH } = anchorInterface;
 const MAX_PX_NR = MAX_DATA_SIZE / PX_SIZE;
 const MAX_JITO_TX_NR = 5;
-const CANVAS_DISPLAY_RATIO = 0.8;
-const SQUARE_MIN_SIZE = 1;
 const DEFAULT_COLOR = "ffffff";
 const DEFAULT_COLOR_KEY = "color";
 
@@ -30,16 +23,6 @@ export default function Main() {
   const menuRef = useRef(null);
   const [coloredPixelsDict, setColoredPixelsDict] = useState<ColoredPixelsDict>(
     {}
-  );
-
-  const { height, width } = useWindowDimensions();
-
-  const squareSize = Math.max(
-    SQUARE_MIN_SIZE,
-    Math.min(
-      Math.floor((width * CANVAS_DISPLAY_RATIO) / PX_WIDTH),
-      Math.floor((height * CANVAS_DISPLAY_RATIO) / PX_HEIGHT)
-    )
   );
 
   const [socials, setSocials] = useState<Socials>();
@@ -133,11 +116,7 @@ export default function Main() {
 
   return (
     <main>
-      <div
-        id="menu"
-        className="flex"
-        style={{ gap: `${squareSize * PX_WIDTH - 20}px` }}
-      >
+      <div id="menu" className="flex">
         <div id="menu-leftside" className="flex gap-2">
           <button disabled={isEditMode && !isEraseMode} onClick={enterEditMode}>
             Pencil
@@ -195,7 +174,7 @@ export default function Main() {
               return pixelCount <= 0
                 ? ""
                 : `${pixelCount}/${
-                    MAX_PX_NR * pixelCount > MAX_PX_NR ? 1 : MAX_JITO_TX_NR
+                    MAX_PX_NR * (pixelCount <= MAX_PX_NR ? 1 : MAX_JITO_TX_NR)
                   }`;
             })()}
           </span>
@@ -205,9 +184,6 @@ export default function Main() {
         isEditMode={isEditMode}
         drawColor={drawColor}
         isEraseMode={isEraseMode}
-        squareSize={squareSize}
-        pxWidth={PX_WIDTH}
-        pxHeight={PX_HEIGHT}
         onColorPixel={onColorPixel}
         onErasePixel={onErasePixel}
         onSetSocials={onSetSocials}

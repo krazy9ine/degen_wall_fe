@@ -1,4 +1,4 @@
-import { SERVER_URL, WSOL_ADDRESS } from "@/app/constants";
+import { DATA_DELIMITER, MAX_DATA_SIZE, PX_HEIGHT, PX_SIZE, PX_WIDTH, SERVER_URL, WSOL_ADDRESS } from "@/app/constants";
 import {
   CanvasLayout,
   MetadataAccountParsed,
@@ -24,10 +24,6 @@ const URL_PREFIX = "https://";
 
 const TWITTER_REGEX = /^[a-zA-Z0-9_]{1,15}$/;
 const IMAGE_REGEX = /\.(jpg|jpeg|png|gif|bmp|webp)$/i;
-
-const anchorInterface = new AnchorInterface(null as unknown as Connection);
-const { MAX_DATA_SIZE, PX_SIZE, DATA_DELIMITER, PX_HEIGHT, PX_WIDTH } =
-  anchorInterface;
 
 let canvas: CanvasLayout = [];
 

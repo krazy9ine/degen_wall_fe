@@ -19,8 +19,6 @@ export type MetadataItem = {
 
 export interface CanvasProps {
   squareSize: number;
-  pxWidth: number;
-  pxHeight: number;
   isEditMode: boolean;
   canvasLayout: CanvasLayout;
 }
@@ -42,9 +40,6 @@ export interface CanvasWrapperProps {
   isEditMode: boolean;
   drawColor: string;
   isEraseMode: boolean;
-  squareSize: number;
-  pxWidth: number;
-  pxHeight: number;
   onColorPixel: (index: number) => void;
   onErasePixel: (index: number) => void;
 }

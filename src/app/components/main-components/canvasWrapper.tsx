@@ -15,8 +15,12 @@ import {
   getUpdatedCanvas,
   initAndGetCanvas,
 } from "./canvas-util";
-import { RPC_URL_KEY } from "@/app/constants";
+import { PX_HEIGHT, PX_WIDTH, RPC_URL_KEY } from "@/app/constants";
 import { EventListenerContext } from "@/app/context/EventListenerProvider";
+import useWindowDimensions from "@/app/hooks/useWindowDimensions";
+
+const CANVAS_DISPLAY_RATIO = 0.8;
+const SQUARE_MIN_SIZE = 1;
 
 export default function CanvasWrapper(
   props: CanvasWrapperProps & { onSetSocials: (socials: Socials) => void }
@@ -25,9 +29,6 @@ export default function CanvasWrapper(
     isEditMode,
     drawColor,
     isEraseMode,
-    squareSize,
-    pxHeight,
-    pxWidth,
     onColorPixel,
     onErasePixel,
     onSetSocials,
@@ -37,6 +38,16 @@ export default function CanvasWrapper(
   );
   const isInitialRender = useRef(true);
   const setEventHandler = useContext(EventListenerContext);
+
+  const { height, width } = useWindowDimensions();
+
+  const squareSize = Math.max(
+    SQUARE_MIN_SIZE,
+    Math.min(
+      Math.floor((width * CANVAS_DISPLAY_RATIO) / PX_WIDTH),
+      Math.floor((height * CANVAS_DISPLAY_RATIO) / PX_HEIGHT)
+    )
+  );
 
   useEffect(() => {
     const updateCanvas = (event: MetadataAccountParsed) => {
@@ -60,8 +71,6 @@ export default function CanvasWrapper(
     <div id="canvas wrapper" className="flex">
       <CanvasView
         squareSize={squareSize}
-        pxHeight={pxHeight}
-        pxWidth={pxWidth}
         isEditMode={isEditMode}
         canvasLayout={canvasLayout}
         onSetSocials={onSetSocials}
@@ -73,8 +82,6 @@ export default function CanvasWrapper(
         onColorPixel={onColorPixel}
         onErasePixel={onErasePixel}
         squareSize={squareSize}
-        pxHeight={pxHeight}
-        pxWidth={pxWidth}
         canvasLayout={canvasLayout}
       ></CanvasEdit>
     </div>

@@ -2,18 +2,12 @@
 
 import { CanvasProps, Socials } from "@/app/types";
 import SquareReadonly from "./squareReadonly";
+import { PX_HEIGHT, PX_WIDTH } from "@/app/constants";
 
 export default function CanvasView(
   props: CanvasProps & { onSetSocials: (socials: Socials) => void }
 ) {
-  const {
-    squareSize,
-    pxHeight,
-    pxWidth,
-    isEditMode,
-    canvasLayout,
-    onSetSocials,
-  } = props;
+  const { squareSize, isEditMode, canvasLayout, onSetSocials } = props;
   return (
     <div
       id="canvas-view"
@@ -21,15 +15,15 @@ export default function CanvasView(
       style={{ opacity: isEditMode ? 0 : 1 }}
     >
       <div id="canvas-readonly">
-        {Array.from({ length: pxHeight }).map((_, rowIndex) => (
+        {Array.from({ length: PX_HEIGHT }).map((_, rowIndex) => (
           <div
             key={`row-${rowIndex}`}
             style={{
               display: "flex",
             }}
           >
-            {Array.from({ length: pxWidth }).map((_, colIndex) => {
-              const index = rowIndex * pxWidth + colIndex;
+            {Array.from({ length: PX_WIDTH }).map((_, colIndex) => {
+              const index = rowIndex * PX_WIDTH + colIndex;
               const pixel = canvasLayout[index];
               return (
                 <SquareReadonly

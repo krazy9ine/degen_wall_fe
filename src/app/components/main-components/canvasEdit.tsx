@@ -1,16 +1,14 @@
 import { CanvasLayout, CanvasProps, CanvasWrapperProps } from "@/app/types";
 import { useEffect, useRef, useState } from "react";
-import useWindowDimensions from "@/app/hooks/useWindowDimensions";
 import SquareEdit from "./squareEdit";
 
 export default function CanvasEdit(props: CanvasWrapperProps & CanvasProps) {
   const {
     isEditMode,
     drawColor,
-    displayRatio,
     pxHeight,
     pxWidth,
-    squareMinSize,
+    squareSize,
     canvasLayout,
     isEraseMode,
     onColorPixel,
@@ -18,17 +16,9 @@ export default function CanvasEdit(props: CanvasWrapperProps & CanvasProps) {
   } = props;
   const [canvas, setCanvas] = useState<CanvasLayout>(canvasLayout);
   const originalCanvas = useRef<CanvasLayout>([]);
-  const { height, width } = useWindowDimensions();
   const isMouseDown = useRef(false);
   const isInitialRender = useRef(true);
 
-  const squareSize = Math.max(
-    squareMinSize,
-    Math.min(
-      Math.floor((width * displayRatio) / pxWidth),
-      Math.floor((height * displayRatio) / pxHeight)
-    )
-  );
   const onSetCanvas = (canvas: CanvasLayout) => {
     setCanvas(canvas);
   };

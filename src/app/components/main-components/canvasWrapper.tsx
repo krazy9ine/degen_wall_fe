@@ -5,10 +5,8 @@ import {
   CanvasLayout,
   CanvasWrapperProps,
   MetadataAccountParsed,
+  Socials,
 } from "@/app/types";
-
-import AnchorInterface from "@/app/web3/program";
-import { Connection } from "@solana/web3.js";
 import CanvasView from "./canvasView";
 import CanvasEdit from "./canvasEdit";
 import { useContext, useEffect, useRef, useState } from "react";
@@ -20,14 +18,20 @@ import {
 import { RPC_URL_KEY } from "@/app/constants";
 import { EventListenerContext } from "@/app/context/EventListenerProvider";
 
-const anchorInterface = new AnchorInterface(null as unknown as Connection);
-const { PX_HEIGHT, PX_WIDTH } = anchorInterface;
-const CANVAS_DISPLAY_RATIO = 0.8;
-const SQUARE_MIN_SIZE = 1;
-
-export default function CanvasWrapper(props: CanvasWrapperProps) {
-  const { isEditMode, drawColor, isEraseMode, onColorPixel, onErasePixel } =
-    props;
+export default function CanvasWrapper(
+  props: CanvasWrapperProps & { onSetSocials: (socials: Socials) => void }
+) {
+  const {
+    isEditMode,
+    drawColor,
+    isEraseMode,
+    squareSize,
+    pxHeight,
+    pxWidth,
+    onColorPixel,
+    onErasePixel,
+    onSetSocials,
+  } = props;
   const [canvasLayout, setCanvasLayout] = useState<CanvasLayout>(
     getDefaultCanvas()
   );
@@ -55,12 +59,12 @@ export default function CanvasWrapper(props: CanvasWrapperProps) {
   return (
     <div id="canvas wrapper" className="flex">
       <CanvasView
-        displayRatio={CANVAS_DISPLAY_RATIO}
-        squareMinSize={SQUARE_MIN_SIZE}
-        pxHeight={PX_HEIGHT}
-        pxWidth={PX_WIDTH}
+        squareSize={squareSize}
+        pxHeight={pxHeight}
+        pxWidth={pxWidth}
         isEditMode={isEditMode}
         canvasLayout={canvasLayout}
+        onSetSocials={onSetSocials}
       ></CanvasView>
       <CanvasEdit
         isEditMode={isEditMode}
@@ -68,10 +72,9 @@ export default function CanvasWrapper(props: CanvasWrapperProps) {
         isEraseMode={isEraseMode}
         onColorPixel={onColorPixel}
         onErasePixel={onErasePixel}
-        displayRatio={CANVAS_DISPLAY_RATIO}
-        squareMinSize={SQUARE_MIN_SIZE}
-        pxHeight={PX_HEIGHT}
-        pxWidth={PX_WIDTH}
+        squareSize={squareSize}
+        pxHeight={pxHeight}
+        pxWidth={pxWidth}
         canvasLayout={canvasLayout}
       ></CanvasEdit>
     </div>

@@ -2,6 +2,15 @@ import { useEffect, useRef, useState } from "react";
 import { CanvasWrapper } from "./canvas";
 import { ColorPicker } from "primereact/colorpicker";
 import { Backdrop } from "@mui/material";
+import { ColoredPixelsDict } from "../types";
+import { ERASE_PIXELS_CODE } from "../constants";
+import AnchorInterface from "../web3/program";
+import { Connection } from "@solana/web3.js";
+
+const anchorInterface = new AnchorInterface(null as unknown as Connection);
+const { MAX_DATA_SIZE, PX_SIZE } = anchorInterface;
+const MAX_PX_NR = MAX_DATA_SIZE / PX_SIZE;
+const JITO_MAX_TX_NR = 5;
 
 const DEFAULT_COLOR = "ffffff";
 const DEFAULT_COLOR_KEY = "color";
@@ -17,6 +26,9 @@ export default function Main() {
   const [open, setOpen] = useState(false);
   const [imageSrc, setImageSrc] = useState("");
   const menuRef = useRef(null);
+  const [coloredPixelsDict, setColoredPixelsDict] = useState<ColoredPixelsDict>(
+    {}
+  );
 
   const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e?.target?.files) {
@@ -46,6 +58,7 @@ export default function Main() {
   const exitEditMode = () => {
     if (isEditMode) setIsEditMode(false);
     if (isEraseMode) setIsEraseMode(false);
+    onErasePixel(ERASE_PIXELS_CODE);
   };
 
   const onSetDrawColor = (color: string) => {
@@ -61,6 +74,23 @@ export default function Main() {
 
   const handleClose = () => {
     setOpen(false);
+  };
+
+  const onColorPixel = (index: number) => {
+    setColoredPixelsDict((prevValues) => {
+      return { ...prevValues, [index]: drawColor };
+    });
+  };
+
+  const onErasePixel = (index: number) => {
+    setColoredPixelsDict((prevValues) => {
+      if (index === ERASE_PIXELS_CODE)
+        // erase all
+        return {};
+      const updatedValues = { ...prevValues };
+      delete updatedValues[index];
+      return updatedValues;
+    });
   };
 
   useEffect(() => {
@@ -123,7 +153,31 @@ export default function Main() {
             Exit
           </button>
         </div>
-        <div id="menu-rightside"></div>
+        <div id="menu-rightside">
+          <span
+            style={{
+              color: (() => {
+                const pixelCount = Object.keys(coloredPixelsDict).length;
+                return pixelCount <= 0
+                  ? "white"
+                  : pixelCount <= MAX_PX_NR
+                  ? "green"
+                  : pixelCount <= MAX_PX_NR * JITO_MAX_TX_NR
+                  ? "orange"
+                  : "red";
+              })(),
+            }}
+          >
+            {(() => {
+              const pixelCount = Object.keys(coloredPixelsDict).length;
+              return pixelCount <= 0
+                ? ""
+                : pixelCount <= MAX_PX_NR
+                ? `${pixelCount}/100`
+                : `${pixelCount}/500`;
+            })()}
+          </span>
+        </div>
       </div>
       <Backdrop
         sx={(theme) => ({ color: "#fff", zIndex: theme.zIndex.drawer + 1 })}
@@ -137,6 +191,8 @@ export default function Main() {
         isEditMode={isEditMode}
         drawColor={drawColor}
         isEraseMode={isEraseMode}
+        onColorPixel={onColorPixel}
+        onErasePixel={onErasePixel}
       ></CanvasWrapper>
     </main>
   );

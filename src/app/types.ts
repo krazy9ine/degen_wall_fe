@@ -36,14 +36,20 @@ export interface SquareReadonlyProps extends SquareProps {
 }
 
 export interface SquareEditProps extends SquareProps {
-  onSetSquareColor: () => void;
+  onSetSquareColor: (isClick?: boolean) => void;
 }
 
 export interface CanvasWrapperProps {
   isEditMode: boolean;
   drawColor: string;
   isEraseMode: boolean;
+  onColorPixel: (index: number) => void;
+  onErasePixel: (index: number) => void;
 }
+
+export type ColoredPixelsDict = {
+  [key: number]: string;
+};
 
 export type CanvasLayout = MetadataItem[];
 

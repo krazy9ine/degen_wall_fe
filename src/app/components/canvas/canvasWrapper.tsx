@@ -26,7 +26,8 @@ const CANVAS_DISPLAY_RATIO = 0.8;
 const SQUARE_MIN_SIZE = 1;
 
 export default function CanvasWrapper(props: CanvasWrapperProps) {
-  const { isEditMode, drawColor, isEraseMode } = props;
+  const { isEditMode, drawColor, isEraseMode, onColorPixel, onErasePixel } =
+    props;
   const [canvasLayout, setCanvasLayout] = useState<CanvasLayout>(
     getDefaultCanvas()
   );
@@ -65,6 +66,8 @@ export default function CanvasWrapper(props: CanvasWrapperProps) {
         isEditMode={isEditMode}
         drawColor={drawColor}
         isEraseMode={isEraseMode}
+        onColorPixel={onColorPixel}
+        onErasePixel={onErasePixel}
         displayRatio={CANVAS_DISPLAY_RATIO}
         squareMinSize={SQUARE_MIN_SIZE}
         pxHeight={PX_HEIGHT}

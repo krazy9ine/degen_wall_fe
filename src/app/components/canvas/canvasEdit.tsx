@@ -13,6 +13,8 @@ export default function CanvasEdit(props: CanvasWrapperProps & CanvasProps) {
     squareMinSize,
     canvasLayout,
     isEraseMode,
+    onColorPixel,
+    onErasePixel,
   } = props;
   const [canvas, setCanvas] = useState<CanvasLayout>(canvasLayout);
   const originalCanvas = useRef<CanvasLayout>([]);
@@ -74,14 +76,19 @@ export default function CanvasEdit(props: CanvasWrapperProps & CanvasProps) {
             {Array.from({ length: pxWidth }).map((_, colIndex) => {
               const index = rowIndex * pxWidth + colIndex;
               const pixel = canvas[index];
-              const onSetSquareColor = () => {
-                if (isMouseDown.current) {
+              const onSetSquareColor = (isClick = false) => {
+                if (isMouseDown.current || isClick) {
                   const canvasCopy = JSON.parse(
                     JSON.stringify(canvas)
                   ) as CanvasLayout;
-                  canvasCopy[index].color = isEraseMode
-                    ? originalCanvas.current[index].color
-                    : drawColor;
+                  if (isEraseMode) {
+                    canvasCopy[index].color =
+                      originalCanvas.current[index].color;
+                    onErasePixel(index);
+                  } else {
+                    canvasCopy[index].color = drawColor;
+                    onColorPixel(index);
+                  }
                   onSetCanvas(canvasCopy);
                 }
               };

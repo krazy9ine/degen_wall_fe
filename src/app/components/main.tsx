@@ -3,10 +3,17 @@ import { CanvasWrapper } from "./canvas";
 import { ColorPicker } from "primereact/colorpicker";
 import { Backdrop } from "@mui/material";
 
+const DEFAULT_COLOR = "ffffff";
+const DEFAULT_COLOR_KEY = "color";
+
 export default function Main() {
   const [isEditMode, setIsEditMode] = useState(false);
   const [isEraseMode, setIsEraseMode] = useState(false);
-  const [drawColor, setDrawColor] = useState("ffffff");
+  const [drawColor, setDrawColor] = useState(
+    typeof window !== "undefined"
+      ? localStorage.getItem(DEFAULT_COLOR_KEY) || DEFAULT_COLOR
+      : DEFAULT_COLOR
+  );
   const [open, setOpen] = useState(false);
   const [imageSrc, setImageSrc] = useState("");
   const menuRef = useRef(null);
@@ -42,7 +49,10 @@ export default function Main() {
   };
 
   const onSetDrawColor = (color: string) => {
-    if (color) setDrawColor(color);
+    if (color) {
+      setDrawColor(color);
+      localStorage.setItem(DEFAULT_COLOR_KEY, color);
+    }
   };
 
   const handleOpen = () => {

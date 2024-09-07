@@ -30,6 +30,8 @@ export default function SquareReadonly(squareProps: SquareReadonlyProps) {
       }}
       onMouseEnter={onHover}
       onMouseLeave={onUnhover}
+      draggable={false}
+      onDragStart={(e) => e.preventDefault()}
     />
   );
 }

@@ -14,6 +14,8 @@ export default function SquareEdit(squareProps: SquareEditProps) {
         flexShrink: 0,
       }}
       onMouseEnter={onSetSquareColor}
+      draggable={false}
+      onDragStart={(e) => e.preventDefault()}
     />
   );
 }

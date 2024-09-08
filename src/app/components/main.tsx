@@ -20,34 +20,38 @@ export default function Main() {
   );
   const [open, setOpen] = useState(false);
   const [imageSrc, setImageSrc] = useState("");
+  const [update, setUpdate] = useState(false);
   const menuRef = useRef(null);
-  const [coloredPixelsDict, setColoredPixelsDict] = useState<ColoredPixelsDict>(
-    {}
-  );
+  const coloredPixelsDict = useRef<ColoredPixelsDict>({});
+  const changesPending = useRef(false);
+  const [socials, setSocials] = useState<Socials>();
+
   const onColorPixel = useCallback(
     (index: number) => {
-      setColoredPixelsDict((prevValues) => {
-        return { ...prevValues, [index]: drawColor };
-      });
+      coloredPixelsDict.current = {
+        ...coloredPixelsDict.current,
+        [index]: drawColor,
+      };
+      changesPending.current = true;
     },
     [drawColor]
   );
   const onErasePixel = useCallback((index: number) => {
-    setColoredPixelsDict((prevValues) => {
-      if (index === ERASE_PIXELS_CODE)
-        // erase all
-        return {};
-      const updatedValues = { ...prevValues };
-      delete updatedValues[index];
-      return updatedValues;
-    });
+    if (index === ERASE_PIXELS_CODE)
+      // erase all
+      coloredPixelsDict.current = {};
+    else delete coloredPixelsDict.current[index];
+    changesPending.current = true;
   }, []);
-
-  const [socials, setSocials] = useState<Socials>();
-
-  const onSetSocials = (socials: Socials) => {
+  const onSetSocials = useCallback((socials: Socials) => {
     setSocials(socials);
-  };
+  }, []);
+  const forceUpdate = useCallback(() => {
+    if (changesPending.current) {
+      setUpdate((prevValue) => !prevValue);
+      changesPending.current = false;
+    }
+  }, []);
 
   const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e?.target?.files) {
@@ -117,7 +121,7 @@ export default function Main() {
 
   return (
     <main>
-      <div id="menu" className="flex">
+      <div id="menu" className="flex mt-2">
         <div id="menu-leftside" className="flex gap-2">
           <button disabled={isEditMode && !isEraseMode} onClick={enterEditMode}>
             Pencil
@@ -159,7 +163,9 @@ export default function Main() {
           <span
             style={{
               color: (() => {
-                const pixelCount = Object.keys(coloredPixelsDict).length;
+                const pixelCount = Object.keys(
+                  coloredPixelsDict.current
+                ).length;
                 return pixelCount <= 0
                   ? "white"
                   : pixelCount <= MAX_PX_NR
@@ -171,7 +177,7 @@ export default function Main() {
             }}
           >
             {(() => {
-              const pixelCount = Object.keys(coloredPixelsDict).length;
+              const pixelCount = Object.keys(coloredPixelsDict.current).length;
               return pixelCount <= 0
                 ? ""
                 : `${pixelCount}/${
@@ -188,6 +194,7 @@ export default function Main() {
         onColorPixel={onColorPixel}
         onErasePixel={onErasePixel}
         onSetSocials={onSetSocials}
+        forceUpdate={forceUpdate}
       ></CanvasWrapper>
       <SocialsSection {...socials} isEditMode={isEditMode}></SocialsSection>
       <Backdrop

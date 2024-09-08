@@ -42,6 +42,7 @@ export interface CanvasWrapperProps {
   isEraseMode: boolean;
   onColorPixel: (index: number) => void;
   onErasePixel: (index: number) => void;
+  forceUpdate: () => void;
 }
 
 export type ColoredPixelsDict = {

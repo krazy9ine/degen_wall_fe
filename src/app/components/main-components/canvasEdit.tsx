@@ -11,6 +11,7 @@ export default function CanvasEdit(props: CanvasWrapperProps & CanvasProps) {
     isEraseMode,
     onColorPixel,
     onErasePixel,
+    forceUpdate,
   } = props;
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const isMouseDown = useRef(false);
@@ -100,16 +101,17 @@ export default function CanvasEdit(props: CanvasWrapperProps & CanvasProps) {
 
     const handleMouseUp = () => {
       isMouseDown.current = false;
+      forceUpdate();
     };
 
     canvas.addEventListener("mousedown", handleMouseDown);
     canvas.addEventListener("mousemove", handleMouseMove);
-    canvas.addEventListener("mouseup", handleMouseUp);
+    document.addEventListener("mouseup", handleMouseUp);
 
     return () => {
       canvas.removeEventListener("mousedown", handleMouseDown);
       canvas.removeEventListener("mousemove", handleMouseMove);
-      canvas.removeEventListener("mouseup", handleMouseUp);
+      document.removeEventListener("mouseup", handleMouseUp);
     };
   }, [
     isEditMode,
@@ -118,6 +120,7 @@ export default function CanvasEdit(props: CanvasWrapperProps & CanvasProps) {
     squareSize,
     onErasePixel,
     onColorPixel,
+    forceUpdate,
   ]);
 
   return (

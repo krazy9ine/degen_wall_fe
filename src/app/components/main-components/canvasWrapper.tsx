@@ -20,7 +20,7 @@ import { EventListenerContext } from "@/app/context/EventListenerProvider";
 import useWindowDimensions from "@/app/hooks/useWindowDimensions";
 
 const CANVAS_DISPLAY_RATIO = 0.8;
-const SQUARE_MIN_SIZE = 1;
+const SQUARE_MIN_SIZE = 12;
 
 const CanvasEditMemo = memo(CanvasEdit);
 
@@ -34,6 +34,7 @@ export default function CanvasWrapper(
     onColorPixel,
     onErasePixel,
     onSetSocials,
+    forceUpdate,
   } = props;
   const [canvasLayout, setCanvasLayout] = useState<CanvasLayout>(
     getDefaultCanvas()
@@ -83,6 +84,7 @@ export default function CanvasWrapper(
         isEraseMode={isEraseMode}
         onColorPixel={onColorPixel}
         onErasePixel={onErasePixel}
+        forceUpdate={forceUpdate}
         squareSize={squareSize}
         canvasReadonly={canvasLayout}
       ></CanvasEditMemo>

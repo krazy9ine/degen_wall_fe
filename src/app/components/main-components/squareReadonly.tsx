@@ -1,33 +1,31 @@
 import { SQUARE_BORDER_COLOR } from "@/app/constants";
 import { SquareReadonlyProps } from "@/app/types";
 import { useState } from "react";
-
-const DEFAULT_OPACITY = 1;
-const HOVER_OPACITY = 0.25;
+import { invertColor } from "./canvas-util";
 
 export default function SquareReadonly(squareProps: SquareReadonlyProps) {
   const { size, metadataItem, onSetSocials } = squareProps;
   const { color, socials } = metadataItem;
-  const [opacity, setOpacity] = useState(DEFAULT_OPACITY);
+  const invertedColor = invertColor(color);
+  const [isHovered, setIsHovered] = useState(false);
 
   const onHover = () => {
-    setOpacity(HOVER_OPACITY);
+    setIsHovered(true);
     onSetSocials(socials);
   };
 
   const onUnhover = () => {
-    setOpacity(DEFAULT_OPACITY);
+    setIsHovered(false);
   };
 
   return (
     <div
       style={{
-        backgroundColor: `#${color}`,
+        backgroundColor: `#${isHovered ? invertedColor : color}`,
         width: `${size}px`,
         height: `${size}px`,
         border: `0.5px solid #${SQUARE_BORDER_COLOR}`,
         flexShrink: 0,
-        opacity: opacity,
       }}
       onMouseEnter={onHover}
       onMouseLeave={onUnhover}

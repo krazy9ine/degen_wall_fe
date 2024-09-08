@@ -1,4 +1,12 @@
-import { DATA_DELIMITER, MAX_DATA_SIZE, PX_HEIGHT, PX_SIZE, PX_WIDTH, SERVER_URL, WSOL_ADDRESS } from "@/app/constants";
+import {
+  DATA_DELIMITER,
+  MAX_DATA_SIZE,
+  PX_HEIGHT,
+  PX_SIZE,
+  PX_WIDTH,
+  SERVER_URL,
+  WSOL_ADDRESS,
+} from "@/app/constants";
 import {
   CanvasLayout,
   MetadataAccountParsed,
@@ -31,6 +39,29 @@ export const getDefaultCanvas = (): CanvasLayout => {
   const default_socials = getDefaultSocials();
   const default_pixel = getDefaultPixel(default_socials);
   return Array(PX_WIDTH * PX_HEIGHT).fill(default_pixel);
+};
+
+export const invertColor = (color: string) => {
+  // Remove the '#' if it's there
+  color = color.replace(/^#/, "");
+
+  // Parse the R, G, and B values
+  let r = parseInt(color.substring(0, 2), 16);
+  let g = parseInt(color.substring(2, 4), 16);
+  let b = parseInt(color.substring(4, 6), 16);
+
+  // Invert each color component
+  r = 255 - r;
+  g = 255 - g;
+  b = 255 - b;
+
+  // Convert the inverted RGB values back to hex and pad with zeros if necessary
+  const invertedColor = `${((1 << 24) + (r << 16) + (g << 8) + b)
+    .toString(16)
+    .slice(1)
+    .toUpperCase()}`;
+
+  return invertedColor;
 };
 
 const getDefaultSocials = (): Socials => {

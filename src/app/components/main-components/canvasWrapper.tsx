@@ -9,7 +9,7 @@ import {
 } from "@/app/types";
 import CanvasView from "./canvasView";
 import CanvasEdit from "./canvasEdit";
-import { useContext, useEffect, useRef, useState } from "react";
+import { memo, useContext, useEffect, useRef, useState } from "react";
 import {
   getDefaultCanvas,
   getUpdatedCanvas,
@@ -21,6 +21,8 @@ import useWindowDimensions from "@/app/hooks/useWindowDimensions";
 
 const CANVAS_DISPLAY_RATIO = 0.8;
 const SQUARE_MIN_SIZE = 1;
+
+const CanvasEditMemo = memo(CanvasEdit);
 
 export default function CanvasWrapper(
   props: CanvasWrapperProps & { onSetSocials: (socials: Socials) => void }
@@ -75,7 +77,7 @@ export default function CanvasWrapper(
         canvasReadonly={canvasLayout}
         onSetSocials={onSetSocials}
       ></CanvasView>
-      <CanvasEdit
+      <CanvasEditMemo
         isEditMode={isEditMode}
         drawColor={drawColor}
         isEraseMode={isEraseMode}
@@ -83,7 +85,7 @@ export default function CanvasWrapper(
         onErasePixel={onErasePixel}
         squareSize={squareSize}
         canvasReadonly={canvasLayout}
-      ></CanvasEdit>
+      ></CanvasEditMemo>
     </div>
   );
 }

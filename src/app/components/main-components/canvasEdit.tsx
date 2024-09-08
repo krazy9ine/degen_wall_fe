@@ -65,11 +65,14 @@ export default function CanvasEdit(props: CanvasWrapperProps & CanvasProps) {
       if (x >= 0 && x < PX_WIDTH && y >= 0 && y < PX_HEIGHT) {
         const index = y * PX_WIDTH + x;
         if (isEraseMode) {
-          drawPixel(x, y, canvasEditable.current[index].color);
-          //onErasePixel(index);
+          const originalColor = canvasReadonlyCopy.current[index].color;
+          drawPixel(x, y, originalColor);
+          canvasEditable.current[index].color = originalColor;
+          onErasePixel(index);
         } else {
           drawPixel(x, y, drawColor);
-          //onColorPixel(index);
+          canvasEditable.current[index].color = drawColor;
+          onColorPixel(index);
         }
       }
     };

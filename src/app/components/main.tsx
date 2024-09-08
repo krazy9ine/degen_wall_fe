@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { CanvasWrapper, SocialsSection } from "./main-components";
 import { ColorPicker } from "primereact/colorpicker";
 import { Backdrop } from "@mui/material";
@@ -24,6 +24,24 @@ export default function Main() {
   const [coloredPixelsDict, setColoredPixelsDict] = useState<ColoredPixelsDict>(
     {}
   );
+  const onColorPixel = useCallback(
+    (index: number) => {
+      setColoredPixelsDict((prevValues) => {
+        return { ...prevValues, [index]: drawColor };
+      });
+    },
+    [drawColor]
+  );
+  const onErasePixel = useCallback((index: number) => {
+    setColoredPixelsDict((prevValues) => {
+      if (index === ERASE_PIXELS_CODE)
+        // erase all
+        return {};
+      const updatedValues = { ...prevValues };
+      delete updatedValues[index];
+      return updatedValues;
+    });
+  }, []);
 
   const [socials, setSocials] = useState<Socials>();
 
@@ -75,23 +93,6 @@ export default function Main() {
 
   const handleClose = () => {
     setOpen(false);
-  };
-
-  const onColorPixel = (index: number) => {
-    setColoredPixelsDict((prevValues) => {
-      return { ...prevValues, [index]: drawColor };
-    });
-  };
-
-  const onErasePixel = (index: number) => {
-    setColoredPixelsDict((prevValues) => {
-      if (index === ERASE_PIXELS_CODE)
-        // erase all
-        return {};
-      const updatedValues = { ...prevValues };
-      delete updatedValues[index];
-      return updatedValues;
-    });
   };
 
   useEffect(() => {

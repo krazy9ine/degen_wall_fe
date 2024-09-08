@@ -1,9 +1,8 @@
-import { MAX_DATA_SIZE, PX_SIZE } from "@/app/constants";
+import { MAX_DATA_SIZE, MAX_JITO_TX_NR, PX_SIZE } from "@/app/constants";
 import { Action, MenuSectionProps } from "@/app/types";
 import { ColorPicker } from "primereact/colorpicker";
 
 const MAX_PX_NR = MAX_DATA_SIZE / PX_SIZE;
-const MAX_JITO_TX_NR = 5;
 
 export default function MenuSection(props: MenuSectionProps) {
   const {

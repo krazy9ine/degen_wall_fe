@@ -8,14 +8,13 @@ import {
   MetadataAccountParsed,
   Socials,
 } from "@/app/types";
-import CanvasReadonly from "./canvasReadonly";
-import CanvasEdit from "./canvasEdit";
+import { CanvasReadonly, CanvasEdit } from "./canvas-components";
 import { memo, useContext, useEffect, useRef, useState } from "react";
 import {
   getDefaultCanvas,
   getUpdatedCanvas,
   initAndGetCanvas,
-} from "./canvas-util";
+} from "./canvas-components/canvas-util";
 import { PX_HEIGHT, PX_WIDTH, RPC_URL_KEY } from "@/app/constants";
 import { EventListenerContext } from "@/app/context/EventListenerProvider";
 import useWindowDimensions from "@/app/hooks/useWindowDimensions";
@@ -75,7 +74,10 @@ export default function CanvasWrapper(
         {...canvasReadonlyProps}
         onSetSocials={onSetSocials}
       ></CanvasReadonly>
-      <CanvasEditMemo {...canvasReadonlyProps} {...canvasEditProps}></CanvasEditMemo>
+      <CanvasEditMemo
+        {...canvasReadonlyProps}
+        {...canvasEditProps}
+      ></CanvasEditMemo>
     </div>
   );
 }

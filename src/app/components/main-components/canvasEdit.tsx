@@ -1,5 +1,5 @@
 import { CanvasWrapperProps, CanvasProps, CanvasLayout } from "@/app/types";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef } from "react";
 import { PX_HEIGHT, PX_WIDTH, SQUARE_BORDER_COLOR } from "@/app/constants";
 
 export default function CanvasEdit(props: CanvasWrapperProps & CanvasProps) {

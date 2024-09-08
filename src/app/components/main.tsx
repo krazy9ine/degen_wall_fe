@@ -1,15 +1,17 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import { CanvasWrapper, MenuSection, SocialsSection } from "./main-components";
-import { Backdrop } from "@mui/material";
 import {
   Action,
   ActionStamped,
   CanvasEditProps,
   ColoredPixelsDict,
   MenuSectionProps,
+  PixelArray,
   Socials,
+  UploadPopupProps,
 } from "../types";
 import { ERASE_PIXELS_CODE } from "../constants";
+import UploadPopup from "./main-components/uploadPopup";
 
 const DEFAULT_COLOR = "ffffff";
 const DEFAULT_COLOR_KEY = "color";
@@ -23,7 +25,7 @@ export default function Main() {
       : DEFAULT_COLOR
   );
   const [open, setOpen] = useState(false);
-  const [imageSrc, setImageSrc] = useState("");
+  const [image, setImage] = useState<PixelArray>([]);
   const [update, setUpdate] = useState(false);
   const menuRef = useRef(null);
   const coloredPixelsDict = useRef<ColoredPixelsDict>({});
@@ -78,18 +80,9 @@ export default function Main() {
     }
   }, []);
 
-  const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    if (e?.target?.files) {
-      const file = e.target.files[0];
-      if (file) {
-        const reader = new FileReader();
-        reader.onloadend = () => {
-          //@ts-ignore
-          setImageSrc(reader.result);
-        };
-        reader.readAsDataURL(file);
-      }
-    }
+  const onSaveImage = (pixelArray: PixelArray) => {
+    setImage(pixelArray);
+    handleClose();
   };
 
   const enableEraseMode = () => {
@@ -151,6 +144,11 @@ export default function Main() {
     exitEditMode,
     handleOpen,
   };
+  const uploadPopupProps: UploadPopupProps = {
+    open,
+    onClose: handleClose,
+    onSaveImage,
+  };
 
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
@@ -181,16 +179,8 @@ export default function Main() {
           onSetSocials={onSetSocials}
         ></CanvasWrapper>
       </div>
-
       <SocialsSection {...socials} isEditMode={isEditMode}></SocialsSection>
-      <Backdrop
-        sx={(theme) => ({ color: "#fff", zIndex: theme.zIndex.drawer + 1 })}
-        open={open}
-      >
-        <div ref={menuRef}>
-          <input type="file" accept="image/*" onChange={handleImageChange} />
-        </div>
-      </Backdrop>
+      <UploadPopup {...uploadPopupProps}></UploadPopup>
     </main>
   );
 }

@@ -42,6 +42,8 @@ export type ActionStamped = null | {
   action: Action;
 };
 
+export type PixelArray = (string | null)[][];
+
 export interface CanvasEditProps {
   isEditMode: boolean;
   drawColor: string;
@@ -50,6 +52,12 @@ export interface CanvasEditProps {
   onErasePixel: (index: number) => void;
   forceUpdate: (isNewAction?: boolean) => void;
   actionStamped: ActionStamped;
+}
+
+export interface UploadPopupProps {
+  open: boolean;
+  onClose: () => void;
+  onSaveImage: (pixelArray: PixelArray) => void;
 }
 
 export type ColoredPixelsDict = {

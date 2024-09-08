@@ -72,7 +72,7 @@ export default function CanvasWrapper(
       <CanvasView
         squareSize={squareSize}
         isEditMode={isEditMode}
-        canvasLayout={canvasLayout}
+        canvasReadonly={canvasLayout}
         onSetSocials={onSetSocials}
       ></CanvasView>
       <CanvasEdit
@@ -82,7 +82,7 @@ export default function CanvasWrapper(
         onColorPixel={onColorPixel}
         onErasePixel={onErasePixel}
         squareSize={squareSize}
-        canvasLayout={canvasLayout}
+        canvasReadonly={canvasLayout}
       ></CanvasEdit>
     </div>
   );

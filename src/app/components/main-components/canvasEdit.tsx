@@ -1,98 +1,129 @@
-import { CanvasLayout, CanvasProps, CanvasWrapperProps } from "@/app/types";
+import { CanvasWrapperProps, CanvasProps, CanvasLayout } from "@/app/types";
 import { useEffect, useRef, useState } from "react";
-import SquareEdit from "./squareEdit";
-import { PX_HEIGHT, PX_WIDTH } from "@/app/constants";
+import { PX_HEIGHT, PX_WIDTH, SQUARE_BORDER_COLOR } from "@/app/constants";
 
 export default function CanvasEdit(props: CanvasWrapperProps & CanvasProps) {
   const {
     isEditMode,
     drawColor,
     squareSize,
-    canvasLayout,
+    canvasReadonly,
     isEraseMode,
     onColorPixel,
     onErasePixel,
   } = props;
-  const [canvas, setCanvas] = useState<CanvasLayout>(canvasLayout);
-  const originalCanvas = useRef<CanvasLayout>([]);
+  const canvasRef = useRef<HTMLCanvasElement>(null);
   const isMouseDown = useRef(false);
   const isInitialRender = useRef(true);
-
-  const onSetCanvas = (canvas: CanvasLayout) => {
-    setCanvas(canvas);
-  };
+  const canvasEditable = useRef<CanvasLayout>([]);
+  const canvasReadonlyCopy = useRef<CanvasLayout>([]);
 
   useEffect(() => {
     if (isEditMode && isInitialRender.current) {
       isInitialRender.current = false;
-      onSetCanvas(canvasLayout);
-      originalCanvas.current = canvasLayout;
+      canvasEditable.current = JSON.parse(JSON.stringify(canvasReadonly));
+      canvasReadonlyCopy.current = JSON.parse(JSON.stringify(canvasReadonly));
     } else if (!isEditMode && !isInitialRender.current) {
       isInitialRender.current = true;
-      onSetCanvas(canvasLayout);
-      originalCanvas.current = [];
+      canvasEditable.current = [];
+      canvasReadonlyCopy.current = [];
     }
-  }, [isEditMode, canvasLayout]);
+  }, [isEditMode, canvasReadonly]);
 
   useEffect(() => {
-    const handleMouseDown = () => {
-      isMouseDown.current = true;
+    const canvas = canvasRef.current;
+    if (!canvas) return;
+    const context = canvas.getContext("2d");
+    if (!context) return;
+    canvas.width = PX_WIDTH * squareSize;
+    canvas.height = PX_HEIGHT * squareSize;
+
+    const drawPixel = (x: number, y: number, color: string) => {
+      context.fillStyle = `#${color}`;
+      context.fillRect(x * squareSize, y * squareSize, squareSize, squareSize);
+      context.strokeStyle = `#${SQUARE_BORDER_COLOR}`;
+      context.lineWidth = 1;
+      context.strokeRect(
+        x * squareSize,
+        y * squareSize,
+        squareSize,
+        squareSize
+      );
     };
+
+    canvasEditable.current.forEach((square, index) => {
+      const row = Math.floor(index / PX_WIDTH);
+      const col = index % PX_WIDTH;
+      drawPixel(col, row, square.color);
+    });
+
+    const handleMouseDown = (event: MouseEvent) => {
+      isMouseDown.current = true;
+      const rect = canvas.getBoundingClientRect();
+      const x = Math.floor((event.clientX - rect.left) / squareSize);
+      const y = Math.floor((event.clientY - rect.top) / squareSize);
+      if (x >= 0 && x < PX_WIDTH && y >= 0 && y < PX_HEIGHT) {
+        const index = y * PX_WIDTH + x;
+        if (isEraseMode) {
+          drawPixel(x, y, canvasEditable.current[index].color);
+          //onErasePixel(index);
+        } else {
+          drawPixel(x, y, drawColor);
+          //onColorPixel(index);
+        }
+      }
+    };
+
+    const handleMouseMove = (event: MouseEvent) => {
+      if (isMouseDown.current) {
+        const rect = canvas.getBoundingClientRect();
+        const x = Math.floor((event.clientX - rect.left) / squareSize);
+        const y = Math.floor((event.clientY - rect.top) / squareSize);
+        if (x >= 0 && x < PX_WIDTH && y >= 0 && y < PX_HEIGHT) {
+          const index = y * PX_WIDTH + x;
+          if (isEraseMode) {
+            const originalColor = canvasReadonlyCopy.current[index].color;
+            drawPixel(x, y, originalColor);
+            canvasEditable.current[index].color = originalColor;
+            onErasePixel(index);
+          } else {
+            drawPixel(x, y, drawColor);
+            canvasEditable.current[index].color = drawColor;
+            onColorPixel(index);
+          }
+        }
+      }
+    };
+
     const handleMouseUp = () => {
       isMouseDown.current = false;
     };
-    window.addEventListener("mousedown", handleMouseDown);
-    window.addEventListener("mouseup", handleMouseUp);
+
+    canvas.addEventListener("mousedown", handleMouseDown);
+    canvas.addEventListener("mousemove", handleMouseMove);
+    canvas.addEventListener("mouseup", handleMouseUp);
+
     return () => {
-      window.removeEventListener("mousedown", handleMouseDown);
-      window.removeEventListener("mouseup", handleMouseUp);
+      canvas.removeEventListener("mousedown", handleMouseDown);
+      canvas.removeEventListener("mousemove", handleMouseMove);
+      canvas.removeEventListener("mouseup", handleMouseUp);
     };
-  }, []);
+  }, [
+    isEditMode,
+    drawColor,
+    isEraseMode,
+    squareSize,
+    onErasePixel,
+    onColorPixel,
+  ]);
+
   return (
     <div
       id="canvas-view"
       className="flex absolute"
       style={{ opacity: isEditMode ? 1 : 0, zIndex: isEditMode ? 1 : -1 }}
     >
-      <div id="canvas-edit">
-        {Array.from({ length: PX_HEIGHT }).map((_, rowIndex) => (
-          <div
-            key={`row-${rowIndex}`}
-            style={{
-              display: "flex",
-            }}
-          >
-            {Array.from({ length: PX_WIDTH }).map((_, colIndex) => {
-              const index = rowIndex * PX_WIDTH + colIndex;
-              const pixel = canvas[index];
-              const onSetSquareColor = (isClick = false) => {
-                if (isMouseDown.current || isClick) {
-                  const canvasCopy = JSON.parse(
-                    JSON.stringify(canvas)
-                  ) as CanvasLayout;
-                  if (isEraseMode) {
-                    canvasCopy[index].color =
-                      originalCanvas.current[index].color;
-                    onErasePixel(index);
-                  } else {
-                    canvasCopy[index].color = drawColor;
-                    onColorPixel(index);
-                  }
-                  onSetCanvas(canvasCopy);
-                }
-              };
-              return (
-                <SquareEdit
-                  key={`${rowIndex}-${colIndex}`}
-                  size={squareSize}
-                  metadataItem={pixel}
-                  onSetSquareColor={onSetSquareColor}
-                />
-              );
-            })}
-          </div>
-        ))}
-      </div>
+      <canvas ref={canvasRef} onDragStart={(e) => e.preventDefault()} />
     </div>
   );
 }

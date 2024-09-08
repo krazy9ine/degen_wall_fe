@@ -7,7 +7,7 @@ import { PX_HEIGHT, PX_WIDTH } from "@/app/constants";
 export default function CanvasView(
   props: CanvasProps & { onSetSocials: (socials: Socials) => void }
 ) {
-  const { squareSize, isEditMode, canvasLayout, onSetSocials } = props;
+  const { squareSize, isEditMode, canvasReadonly: canvasLayout, onSetSocials } = props;
   return (
     <div
       id="canvas-view"

@@ -20,7 +20,7 @@ export type MetadataItem = {
 export interface CanvasProps {
   squareSize: number;
   isEditMode: boolean;
-  canvasLayout: CanvasLayout;
+  canvasReadonly: CanvasLayout;
 }
 
 interface SquareProps {

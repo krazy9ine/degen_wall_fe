@@ -20,7 +20,7 @@ import { EventListenerContext } from "@/app/context/EventListenerProvider";
 import useWindowDimensions from "@/app/hooks/useWindowDimensions";
 
 const CANVAS_DISPLAY_RATIO = 0.8;
-const SQUARE_MIN_SIZE = 12;
+const SQUARE_MIN_SIZE = 8;
 
 const CanvasEditMemo = memo(CanvasEdit);
 

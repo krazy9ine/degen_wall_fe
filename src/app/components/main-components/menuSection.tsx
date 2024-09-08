@@ -21,7 +21,7 @@ export default function MenuSection(props: MenuSectionProps) {
     handleOpen,
   } = props;
   return (
-    <div id="menu" className="flex mt-2">
+    <div id="menu" className="flex justify-between mt-2">
       <div id="menu-leftside" className="flex gap-2">
         <button disabled={isEditMode && !isEraseMode} onClick={enterEditMode}>
           Pencil
@@ -89,7 +89,7 @@ export default function MenuSection(props: MenuSectionProps) {
           {coloredPixelsCount > 0 &&
             `${coloredPixelsCount}/${
               MAX_PX_NR * (coloredPixelsCount <= MAX_PX_NR ? 1 : MAX_JITO_TX_NR)
-            }`}
+            } PX`}
         </span>
       </div>
     </div>

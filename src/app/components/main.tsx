@@ -174,11 +174,14 @@ export default function Main() {
 
   return (
     <main>
-      <MenuSection {...menuSectionProps}></MenuSection>
-      <CanvasWrapper
-        {...canvasEditProps}
-        onSetSocials={onSetSocials}
-      ></CanvasWrapper>
+      <div id="menu-canvas-wrapper" className="inline-block">
+        <MenuSection {...menuSectionProps}></MenuSection>
+        <CanvasWrapper
+          {...canvasEditProps}
+          onSetSocials={onSetSocials}
+        ></CanvasWrapper>
+      </div>
+
       <SocialsSection {...socials} isEditMode={isEditMode}></SocialsSection>
       <Backdrop
         sx={(theme) => ({ color: "#fff", zIndex: theme.zIndex.drawer + 1 })}

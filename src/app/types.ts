@@ -32,10 +32,6 @@ export interface SquareReadonlyProps extends SquareProps {
   onSetSocials: (socials: Socials) => void;
 }
 
-export interface SquareEditProps extends SquareProps {
-  onSetSquareColor: (isClick?: boolean) => void;
-}
-
 export enum Action {
   Undo = "Undo",
   Redo = "Redo",
@@ -67,6 +63,21 @@ export type ColoredPixelsActionsDict = {
 };
 
 export type CanvasLayout = MetadataItem[];
+
+export type MenuSectionProps = {
+  isEditMode: boolean;
+  isEraseMode: boolean;
+  drawColor: string;
+  undoCount: number;
+  redoCount: number;
+  coloredPixelsCount: number;
+  onSetActionStamped: (action: Action) => void;
+  onSetDrawColor: (color: string) => void;
+  enterEditMode: () => void;
+  enableEraseMode: () => void;
+  exitEditMode: () => void;
+  handleOpen: () => void;
+};
 
 export type MetadataAccountCreatedEvent = {
   mint: web3.PublicKey;

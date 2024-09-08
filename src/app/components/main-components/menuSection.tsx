@@ -1,0 +1,97 @@
+import { MAX_DATA_SIZE, PX_SIZE } from "@/app/constants";
+import { Action, MenuSectionProps } from "@/app/types";
+import { ColorPicker } from "primereact/colorpicker";
+
+const MAX_PX_NR = MAX_DATA_SIZE / PX_SIZE;
+const MAX_JITO_TX_NR = 5;
+
+export default function MenuSection(props: MenuSectionProps) {
+  const {
+    isEditMode,
+    isEraseMode,
+    drawColor,
+    undoCount,
+    redoCount,
+    coloredPixelsCount,
+    onSetActionStamped,
+    onSetDrawColor,
+    enterEditMode,
+    enableEraseMode,
+    exitEditMode,
+    handleOpen,
+  } = props;
+  return (
+    <div id="menu" className="flex mt-2">
+      <div id="menu-leftside" className="flex gap-2">
+        <button disabled={isEditMode && !isEraseMode} onClick={enterEditMode}>
+          Pencil
+        </button>
+        <div
+          className="w-6 h-6 border-white border-2 rounded-full overflow-hidden"
+          style={{ opacity: isEditMode ? 1 : 0 }}
+        >
+          <ColorPicker
+            format="hex"
+            value={drawColor}
+            onChange={(e) => onSetDrawColor(e.value as string)}
+            disabled={!isEditMode}
+          />
+        </div>
+        <button
+          disabled={!isEditMode || isEraseMode}
+          style={{ opacity: isEditMode ? 1 : 0 }}
+          onClick={enableEraseMode}
+        >
+          Erase
+        </button>
+        <button
+          disabled={!isEditMode}
+          style={{ opacity: isEditMode ? 1 : 0 }}
+          onClick={handleOpen}
+        >
+          Upload
+        </button>
+        <button
+          disabled={!isEditMode || !undoCount}
+          style={{ opacity: isEditMode ? 1 : 0 }}
+          onClick={() => onSetActionStamped(Action.Undo)}
+        >
+          Undo
+        </button>
+        <button
+          disabled={!isEditMode || !redoCount}
+          style={{ opacity: isEditMode ? 1 : 0 }}
+          onClick={() => onSetActionStamped(Action.Redo)}
+        >
+          Redo
+        </button>
+        <button
+          disabled={!isEditMode}
+          style={{ opacity: isEditMode ? 1 : 0 }}
+          onClick={exitEditMode}
+        >
+          Exit
+        </button>
+      </div>
+      <div id="menu-rightside">
+        <span
+          style={{
+            color:
+              coloredPixelsCount === 0
+                ? "white"
+                : coloredPixelsCount <= MAX_PX_NR
+                ? "green"
+                : coloredPixelsCount <= MAX_PX_NR * MAX_JITO_TX_NR
+                ? "orange"
+                : "red",
+          }}
+        >
+          {coloredPixelsCount > 0 &&
+            `${coloredPixelsCount}/${
+              MAX_PX_NR * (coloredPixelsCount <= MAX_PX_NR ? 1 : MAX_JITO_TX_NR)
+            }`}
+        </span>
+      </div>
+    </div>
+  );
+}

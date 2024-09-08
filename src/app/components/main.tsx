@@ -1,18 +1,16 @@
 import { useCallback, useEffect, useRef, useState } from "react";
-import { CanvasWrapper, SocialsSection } from "./main-components";
-import { ColorPicker } from "primereact/colorpicker";
+import { CanvasWrapper, MenuSection, SocialsSection } from "./main-components";
 import { Backdrop } from "@mui/material";
 import {
   Action,
   ActionStamped,
   CanvasEditProps,
   ColoredPixelsDict,
+  MenuSectionProps,
   Socials,
 } from "../types";
-import { ERASE_PIXELS_CODE, MAX_DATA_SIZE, PX_SIZE } from "../constants";
+import { ERASE_PIXELS_CODE } from "../constants";
 
-const MAX_PX_NR = MAX_DATA_SIZE / PX_SIZE;
-const MAX_JITO_TX_NR = 5;
 const DEFAULT_COLOR = "ffffff";
 const DEFAULT_COLOR_KEY = "color";
 
@@ -139,6 +137,21 @@ export default function Main() {
     actionStamped,
   };
 
+  const menuSectionProps: MenuSectionProps = {
+    isEditMode,
+    isEraseMode,
+    drawColor,
+    undoCount: undoCount.current,
+    redoCount: redoCount.current,
+    coloredPixelsCount: Object.keys(coloredPixelsDict.current).length,
+    onSetActionStamped,
+    onSetDrawColor,
+    enterEditMode,
+    enableEraseMode,
+    exitEditMode,
+    handleOpen,
+  };
+
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
       //@ts-ignore
@@ -161,86 +174,7 @@ export default function Main() {
 
   return (
     <main>
-      <div id="menu" className="flex mt-2">
-        <div id="menu-leftside" className="flex gap-2">
-          <button disabled={isEditMode && !isEraseMode} onClick={enterEditMode}>
-            Pencil
-          </button>
-          <div
-            className="w-6 h-6 border-white border-2 rounded-full overflow-hidden"
-            style={{ opacity: isEditMode ? 1 : 0 }}
-          >
-            <ColorPicker
-              format="hex"
-              value={drawColor}
-              onChange={(e) => onSetDrawColor(e.value as string)}
-              disabled={!isEditMode}
-            />
-          </div>
-          <button
-            disabled={!isEditMode || isEraseMode}
-            style={{ opacity: isEditMode ? 1 : 0 }}
-            onClick={enableEraseMode}
-          >
-            Erase
-          </button>
-          <button
-            disabled={!isEditMode}
-            style={{ opacity: isEditMode ? 1 : 0 }}
-            onClick={handleOpen}
-          >
-            Upload
-          </button>
-          <button
-            disabled={!isEditMode || !undoCount.current}
-            style={{ opacity: isEditMode ? 1 : 0 }}
-            onClick={() => onSetActionStamped(Action.Undo)}
-          >
-            Undo
-          </button>
-          <button
-            disabled={!isEditMode || !redoCount.current}
-            style={{ opacity: isEditMode ? 1 : 0 }}
-            onClick={() => onSetActionStamped(Action.Redo)}
-          >
-            Redo
-          </button>
-          <button
-            disabled={!isEditMode}
-            style={{ opacity: isEditMode ? 1 : 0 }}
-            onClick={exitEditMode}
-          >
-            Exit
-          </button>
-        </div>
-        <div id="menu-rightside">
-          <span
-            style={{
-              color: (() => {
-                const pixelCount = Object.keys(
-                  coloredPixelsDict.current
-                ).length;
-                return pixelCount <= 0
-                  ? "white"
-                  : pixelCount <= MAX_PX_NR
-                  ? "green"
-                  : pixelCount <= MAX_PX_NR * MAX_JITO_TX_NR
-                  ? "orange"
-                  : "red";
-              })(),
-            }}
-          >
-            {(() => {
-              const pixelCount = Object.keys(coloredPixelsDict.current).length;
-              return pixelCount <= 0
-                ? ""
-                : `${pixelCount}/${
-                    MAX_PX_NR * (pixelCount <= MAX_PX_NR ? 1 : MAX_JITO_TX_NR)
-                  }`;
-            })()}
-          </span>
-        </div>
-      </div>
+      <MenuSection {...menuSectionProps}></MenuSection>
       <CanvasWrapper
         {...canvasEditProps}
         onSetSocials={onSetSocials}

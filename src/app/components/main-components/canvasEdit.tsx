@@ -71,21 +71,6 @@ export default function CanvasEdit(
       );
     };
 
-    const redrawPixel = (index: number, color: string) => {
-      const x = index % PX_WIDTH;
-      const y = index / PX_WIDTH;
-      context.fillStyle = `#${color}`;
-      context.fillRect(x * squareSize, y * squareSize, squareSize, squareSize);
-      context.strokeStyle = `#${SQUARE_BORDER_COLOR}`;
-      context.lineWidth = 1;
-      context.strokeRect(
-        x * squareSize,
-        y * squareSize,
-        squareSize,
-        squareSize
-      );
-    };
-
     const addPixelAction = (index: number, color?: string) => {
       const action = coloredPixelsActionsDict.current[index];
       if (action?.newColor !== color) {
@@ -123,7 +108,6 @@ export default function CanvasEdit(
           canvasEditable.current[index].color = color;
           //onColorPixel(index, color);
         }
-        redrawPixel(index, canvasEditable.current[index].color);
       }
     };
 
@@ -141,6 +125,15 @@ export default function CanvasEdit(
         applyCanvasAction(action, "prevColor");
       }
     };
+
+    if (
+      actionStamped &&
+      actionStamped.timestamp !== latestAction.current?.timestamp
+    ) {
+      latestAction.current = { ...actionStamped };
+      if (latestAction.current.action === Action.Undo) undoCanvasAction();
+      else redoCanvasAction();
+    }
 
     canvasEditable.current.forEach((square, index) => {
       const row = Math.floor(index / PX_WIDTH);
@@ -177,15 +170,6 @@ export default function CanvasEdit(
     const handleMouseMove = (event: MouseEvent) => {
       if (isMouseDown.current) handlePixelAction(event);
     };
-
-    if (
-      actionStamped &&
-      actionStamped.timestamp !== latestAction.current?.timestamp
-    ) {
-      latestAction.current = { ...actionStamped };
-      if (latestAction.current.action === Action.Undo) undoCanvasAction();
-      else redoCanvasAction();
-    }
 
     const handleMouseUp = () => {
       isMouseDown.current = false;

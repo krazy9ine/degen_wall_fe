@@ -1,8 +1,18 @@
-import { CanvasEditProps, CanvasReadonlyProps, CanvasLayout } from "@/app/types";
+import {
+  CanvasEditProps,
+  CanvasReadonlyProps,
+  CanvasLayout,
+  ColoredPixelsActionsDict,
+  ActionStamped,
+  ColorPixelPointers,
+  Action,
+} from "@/app/types";
 import { useEffect, useRef } from "react";
 import { PX_HEIGHT, PX_WIDTH, SQUARE_BORDER_COLOR } from "@/app/constants";
 
-export default function CanvasEdit(props: CanvasEditProps & CanvasReadonlyProps) {
+export default function CanvasEdit(
+  props: CanvasEditProps & CanvasReadonlyProps
+) {
   const {
     isEditMode,
     drawColor,
@@ -12,12 +22,17 @@ export default function CanvasEdit(props: CanvasEditProps & CanvasReadonlyProps)
     onColorPixel,
     onErasePixel,
     forceUpdate,
+    actionStamped,
   } = props;
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const isMouseDown = useRef(false);
   const isInitialRender = useRef(true);
   const canvasEditable = useRef<CanvasLayout>([]);
   const canvasReadonlyCopy = useRef<CanvasLayout>([]);
+  const coloredPixelsActionsDict = useRef<ColoredPixelsActionsDict>({});
+  const canvasActions = useRef<ColoredPixelsActionsDict[]>([]);
+  const canvasActionsUndoed = useRef<ColoredPixelsActionsDict[]>([]);
+  const latestAction = useRef<ActionStamped>();
 
   useEffect(() => {
     if (isEditMode && isInitialRender.current) {
@@ -28,6 +43,10 @@ export default function CanvasEdit(props: CanvasEditProps & CanvasReadonlyProps)
       isInitialRender.current = true;
       canvasEditable.current = [];
       canvasReadonlyCopy.current = [];
+      coloredPixelsActionsDict.current = {};
+      canvasActions.current = [];
+      canvasActionsUndoed.current = [];
+      latestAction.current = null;
     }
   }, [isEditMode, canvasReadonly]);
 
@@ -52,14 +71,84 @@ export default function CanvasEdit(props: CanvasEditProps & CanvasReadonlyProps)
       );
     };
 
+    const redrawPixel = (index: number, color: string) => {
+      const x = index % PX_WIDTH;
+      const y = index / PX_WIDTH;
+      context.fillStyle = `#${color}`;
+      context.fillRect(x * squareSize, y * squareSize, squareSize, squareSize);
+      context.strokeStyle = `#${SQUARE_BORDER_COLOR}`;
+      context.lineWidth = 1;
+      context.strokeRect(
+        x * squareSize,
+        y * squareSize,
+        squareSize,
+        squareSize
+      );
+    };
+
+    const addPixelAction = (index: number, color?: string) => {
+      const action = coloredPixelsActionsDict.current[index];
+      if (action?.newColor !== color) {
+        coloredPixelsActionsDict.current = {
+          ...coloredPixelsActionsDict.current,
+          [index]: {
+            prevColor: action?.newColor,
+            newColor: color,
+          },
+        };
+        canvasActionsUndoed.current = [];
+      }
+    };
+    const addCanvasAction = () => {
+      const action = coloredPixelsActionsDict.current;
+      if (Object.keys(action).length) {
+        canvasActions.current.push(action);
+        canvasActionsUndoed.current = [];
+        coloredPixelsActionsDict.current = {};
+      }
+    };
+
+    const applyCanvasAction = (
+      action: ColoredPixelsActionsDict,
+      key: keyof ColorPixelPointers
+    ) => {
+      for (const [indexString, entry] of Object.entries(action)) {
+        const color = entry[key];
+        const index = Number(indexString);
+        if (!color) {
+          canvasEditable.current[index].color =
+            canvasReadonlyCopy.current[index].color;
+          //onErasePixel(index);
+        } else {
+          canvasEditable.current[index].color = color;
+          //onColorPixel(index, color);
+        }
+        redrawPixel(index, canvasEditable.current[index].color);
+      }
+    };
+
+    const redoCanvasAction = () => {
+      const action = canvasActionsUndoed.current.pop();
+      if (action) {
+        canvasActions.current.push(action);
+        applyCanvasAction(action, "newColor");
+      }
+    };
+    const undoCanvasAction = () => {
+      const action = canvasActions.current.pop();
+      if (action) {
+        canvasActionsUndoed.current.push(action);
+        applyCanvasAction(action, "prevColor");
+      }
+    };
+
     canvasEditable.current.forEach((square, index) => {
       const row = Math.floor(index / PX_WIDTH);
       const col = index % PX_WIDTH;
       drawPixel(col, row, square.color);
     });
 
-    const handleMouseDown = (event: MouseEvent) => {
-      isMouseDown.current = true;
+    const handlePixelAction = (event: MouseEvent) => {
       const rect = canvas.getBoundingClientRect();
       const x = Math.floor((event.clientX - rect.left) / squareSize);
       const y = Math.floor((event.clientY - rect.top) / squareSize);
@@ -69,39 +158,39 @@ export default function CanvasEdit(props: CanvasEditProps & CanvasReadonlyProps)
           const originalColor = canvasReadonlyCopy.current[index].color;
           drawPixel(x, y, originalColor);
           canvasEditable.current[index].color = originalColor;
+          addPixelAction(index);
           onErasePixel(index);
         } else {
           drawPixel(x, y, drawColor);
           canvasEditable.current[index].color = drawColor;
+          addPixelAction(index, drawColor);
           onColorPixel(index);
         }
       }
     };
 
-    const handleMouseMove = (event: MouseEvent) => {
-      if (isMouseDown.current) {
-        const rect = canvas.getBoundingClientRect();
-        const x = Math.floor((event.clientX - rect.left) / squareSize);
-        const y = Math.floor((event.clientY - rect.top) / squareSize);
-        if (x >= 0 && x < PX_WIDTH && y >= 0 && y < PX_HEIGHT) {
-          const index = y * PX_WIDTH + x;
-          if (isEraseMode) {
-            const originalColor = canvasReadonlyCopy.current[index].color;
-            drawPixel(x, y, originalColor);
-            canvasEditable.current[index].color = originalColor;
-            onErasePixel(index);
-          } else {
-            drawPixel(x, y, drawColor);
-            canvasEditable.current[index].color = drawColor;
-            onColorPixel(index);
-          }
-        }
-      }
+    const handleMouseDown = (event: MouseEvent) => {
+      isMouseDown.current = true;
+      handlePixelAction(event);
     };
+
+    const handleMouseMove = (event: MouseEvent) => {
+      if (isMouseDown.current) handlePixelAction(event);
+    };
+
+    if (
+      actionStamped &&
+      actionStamped.timestamp !== latestAction.current?.timestamp
+    ) {
+      latestAction.current = { ...actionStamped };
+      if (latestAction.current.action === Action.Undo) undoCanvasAction();
+      else redoCanvasAction();
+    }
 
     const handleMouseUp = () => {
       isMouseDown.current = false;
       forceUpdate();
+      addCanvasAction();
     };
 
     canvas.addEventListener("mousedown", handleMouseDown);
@@ -121,6 +210,7 @@ export default function CanvasEdit(props: CanvasEditProps & CanvasReadonlyProps)
     onErasePixel,
     onColorPixel,
     forceUpdate,
+    actionStamped,
   ]);
 
   return (

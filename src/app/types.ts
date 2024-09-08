@@ -36,17 +36,34 @@ export interface SquareEditProps extends SquareProps {
   onSetSquareColor: (isClick?: boolean) => void;
 }
 
+export enum Action {
+  Undo = "Undo",
+  Redo = "Redo",
+}
+
+export type ActionStamped = null | {
+  timestamp: number;
+  action: Action;
+};
+
 export interface CanvasEditProps {
   isEditMode: boolean;
   drawColor: string;
   isEraseMode: boolean;
-  onColorPixel: (index: number) => void;
+  onColorPixel: (index: number, color?: string) => void;
   onErasePixel: (index: number) => void;
   forceUpdate: () => void;
+  actionStamped: ActionStamped;
 }
 
 export type ColoredPixelsDict = {
   [key: number]: string;
+};
+
+export type ColorPixelPointers = { prevColor?: string; newColor?: string };
+
+export type ColoredPixelsActionsDict = {
+  [key: number]: ColorPixelPointers;
 };
 
 export type CanvasLayout = MetadataItem[];

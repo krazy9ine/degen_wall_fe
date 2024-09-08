@@ -2,7 +2,13 @@ import { useCallback, useEffect, useRef, useState } from "react";
 import { CanvasWrapper, SocialsSection } from "./main-components";
 import { ColorPicker } from "primereact/colorpicker";
 import { Backdrop } from "@mui/material";
-import { CanvasEditProps, ColoredPixelsDict, Socials } from "../types";
+import {
+  Action,
+  ActionStamped,
+  CanvasEditProps,
+  ColoredPixelsDict,
+  Socials,
+} from "../types";
 import { ERASE_PIXELS_CODE, MAX_DATA_SIZE, PX_SIZE } from "../constants";
 
 const MAX_PX_NR = MAX_DATA_SIZE / PX_SIZE;
@@ -25,12 +31,21 @@ export default function Main() {
   const coloredPixelsDict = useRef<ColoredPixelsDict>({});
   const changesPending = useRef(false);
   const [socials, setSocials] = useState<Socials>();
+  const [actionStamped, setActionStamped] = useState<ActionStamped>(null);
+
+  const onSetActionStamped = (action: Action) => {
+    setActionStamped({ action, timestamp: Date.now() });
+  };
+
+  const clearActionStamped = () => {
+    setActionStamped(null);
+  };
 
   const onColorPixel = useCallback(
-    (index: number) => {
+    (index: number, color = drawColor) => {
       coloredPixelsDict.current = {
         ...coloredPixelsDict.current,
-        [index]: drawColor,
+        [index]: color,
       };
       changesPending.current = true;
     },
@@ -82,6 +97,7 @@ export default function Main() {
     if (isEditMode) setIsEditMode(false);
     if (isEraseMode) setIsEraseMode(false);
     onErasePixel(ERASE_PIXELS_CODE);
+    clearActionStamped();
   };
 
   const onSetDrawColor = (color: string) => {
@@ -106,6 +122,7 @@ export default function Main() {
     isEraseMode,
     onColorPixel,
     onErasePixel,
+    actionStamped,
   };
 
   useEffect(() => {
@@ -159,6 +176,20 @@ export default function Main() {
             onClick={handleOpen}
           >
             Upload
+          </button>
+          <button
+            disabled={!isEditMode}
+            style={{ opacity: isEditMode ? 1 : 0 }}
+            onClick={() => onSetActionStamped(Action.Undo)}
+          >
+            Undo
+          </button>
+          <button
+            disabled={!isEditMode}
+            style={{ opacity: isEditMode ? 1 : 0 }}
+            onClick={() => onSetActionStamped(Action.Redo)}
+          >
+            Redo
           </button>
           <button
             disabled={!isEditMode}

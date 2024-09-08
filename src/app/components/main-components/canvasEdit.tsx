@@ -103,12 +103,13 @@ export default function CanvasEdit(
         if (!color) {
           canvasEditable.current[index].color =
             canvasReadonlyCopy.current[index].color;
-          //onErasePixel(index);
+          onErasePixel(index);
         } else {
           canvasEditable.current[index].color = color;
-          //onColorPixel(index, color);
+          onColorPixel(index, color);
         }
       }
+      forceUpdate();
     };
 
     const redoCanvasAction = () => {
@@ -172,9 +173,11 @@ export default function CanvasEdit(
     };
 
     const handleMouseUp = () => {
-      isMouseDown.current = false;
-      forceUpdate();
-      addCanvasAction();
+      if (isMouseDown.current) {
+        isMouseDown.current = false;
+        forceUpdate(true);
+        addCanvasAction();
+      }
     };
 
     canvas.addEventListener("mousedown", handleMouseDown);

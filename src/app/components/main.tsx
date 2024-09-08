@@ -32,8 +32,16 @@ export default function Main() {
   const changesPending = useRef(false);
   const [socials, setSocials] = useState<Socials>();
   const [actionStamped, setActionStamped] = useState<ActionStamped>(null);
-
+  const undoCount = useRef(0);
+  const redoCount = useRef(0);
   const onSetActionStamped = (action: Action) => {
+    if (action === Action.Undo) {
+      redoCount.current++;
+      undoCount.current--;
+    } else {
+      undoCount.current++;
+      redoCount.current--;
+    }
     setActionStamped({ action, timestamp: Date.now() });
   };
 
@@ -61,10 +69,14 @@ export default function Main() {
   const onSetSocials = useCallback((socials: Socials) => {
     setSocials(socials);
   }, []);
-  const forceUpdate = useCallback(() => {
+  const forceUpdate = useCallback((isNewAction?: boolean) => {
     if (changesPending.current) {
       setUpdate((prevValue) => !prevValue);
       changesPending.current = false;
+      if (isNewAction) {
+        undoCount.current++;
+        redoCount.current = 0;
+      }
     }
   }, []);
 
@@ -98,6 +110,8 @@ export default function Main() {
     if (isEraseMode) setIsEraseMode(false);
     onErasePixel(ERASE_PIXELS_CODE);
     clearActionStamped();
+    undoCount.current = 0;
+    redoCount.current = 0;
   };
 
   const onSetDrawColor = (color: string) => {
@@ -178,14 +192,14 @@ export default function Main() {
             Upload
           </button>
           <button
-            disabled={!isEditMode}
+            disabled={!isEditMode || !undoCount.current}
             style={{ opacity: isEditMode ? 1 : 0 }}
             onClick={() => onSetActionStamped(Action.Undo)}
           >
             Undo
           </button>
           <button
-            disabled={!isEditMode}
+            disabled={!isEditMode || !redoCount.current}
             style={{ opacity: isEditMode ? 1 : 0 }}
             onClick={() => onSetActionStamped(Action.Redo)}
           >

@@ -52,7 +52,7 @@ export interface CanvasEditProps {
   isEraseMode: boolean;
   onColorPixel: (index: number, color?: string) => void;
   onErasePixel: (index: number) => void;
-  forceUpdate: () => void;
+  forceUpdate: (isNewAction?: boolean) => void;
   actionStamped: ActionStamped;
 }
 

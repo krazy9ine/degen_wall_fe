@@ -4,7 +4,7 @@ import { CanvasProps, Socials } from "@/app/types";
 import SquareReadonly from "./squareReadonly";
 import { PX_HEIGHT, PX_WIDTH } from "@/app/constants";
 
-export default function CanvasView(
+export default function CanvasReadonly(
   props: CanvasProps & { onSetSocials: (socials: Socials) => void }
 ) {
   const { squareSize, isEditMode, canvasReadonly: canvasLayout, onSetSocials } = props;

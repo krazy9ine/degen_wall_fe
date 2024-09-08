@@ -7,7 +7,7 @@ import {
   MetadataAccountParsed,
   Socials,
 } from "@/app/types";
-import CanvasView from "./canvasView";
+import CanvasReadonly from "./canvasReadonly";
 import CanvasEdit from "./canvasEdit";
 import { memo, useContext, useEffect, useRef, useState } from "react";
 import {
@@ -72,12 +72,12 @@ export default function CanvasWrapper(
   }, [canvasLayout, setEventHandler]);
   return (
     <div id="canvas wrapper" className="flex">
-      <CanvasView
+      <CanvasReadonly
         squareSize={squareSize}
         isEditMode={isEditMode}
         canvasReadonly={canvasLayout}
         onSetSocials={onSetSocials}
-      ></CanvasView>
+      ></CanvasReadonly>
       <CanvasEditMemo
         isEditMode={isEditMode}
         drawColor={drawColor}

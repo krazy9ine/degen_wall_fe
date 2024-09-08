@@ -2,7 +2,7 @@ import { useCallback, useEffect, useRef, useState } from "react";
 import { CanvasWrapper, SocialsSection } from "./main-components";
 import { ColorPicker } from "primereact/colorpicker";
 import { Backdrop } from "@mui/material";
-import { ColoredPixelsDict, Socials } from "../types";
+import { CanvasEditProps, ColoredPixelsDict, Socials } from "../types";
 import { ERASE_PIXELS_CODE, MAX_DATA_SIZE, PX_SIZE } from "../constants";
 
 const MAX_PX_NR = MAX_DATA_SIZE / PX_SIZE;
@@ -99,6 +99,15 @@ export default function Main() {
     setOpen(false);
   };
 
+  const canvasEditProps: CanvasEditProps = {
+    drawColor,
+    forceUpdate,
+    isEditMode,
+    isEraseMode,
+    onColorPixel,
+    onErasePixel,
+  };
+
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
       //@ts-ignore
@@ -188,13 +197,8 @@ export default function Main() {
         </div>
       </div>
       <CanvasWrapper
-        isEditMode={isEditMode}
-        drawColor={drawColor}
-        isEraseMode={isEraseMode}
-        onColorPixel={onColorPixel}
-        onErasePixel={onErasePixel}
+        {...canvasEditProps}
         onSetSocials={onSetSocials}
-        forceUpdate={forceUpdate}
       ></CanvasWrapper>
       <SocialsSection {...socials} isEditMode={isEditMode}></SocialsSection>
       <Backdrop

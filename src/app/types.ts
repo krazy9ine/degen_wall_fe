@@ -17,7 +17,7 @@ export type MetadataItem = {
   socials: Socials;
 };
 
-export interface CanvasProps {
+export interface CanvasReadonlyProps {
   squareSize: number;
   isEditMode: boolean;
   canvasReadonly: CanvasLayout;
@@ -36,7 +36,7 @@ export interface SquareEditProps extends SquareProps {
   onSetSquareColor: (isClick?: boolean) => void;
 }
 
-export interface CanvasWrapperProps {
+export interface CanvasEditProps {
   isEditMode: boolean;
   drawColor: string;
   isEraseMode: boolean;

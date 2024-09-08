@@ -1,8 +1,8 @@
-import { CanvasWrapperProps, CanvasProps, CanvasLayout } from "@/app/types";
+import { CanvasEditProps, CanvasReadonlyProps, CanvasLayout } from "@/app/types";
 import { useEffect, useRef } from "react";
 import { PX_HEIGHT, PX_WIDTH, SQUARE_BORDER_COLOR } from "@/app/constants";
 
-export default function CanvasEdit(props: CanvasWrapperProps & CanvasProps) {
+export default function CanvasEdit(props: CanvasEditProps & CanvasReadonlyProps) {
   const {
     isEditMode,
     drawColor,

@@ -3,7 +3,8 @@
 
 import {
   CanvasLayout,
-  CanvasWrapperProps,
+  CanvasReadonlyProps,
+  CanvasEditProps,
   MetadataAccountParsed,
   Socials,
 } from "@/app/types";
@@ -25,18 +26,10 @@ const SQUARE_MIN_SIZE = 12;
 const CanvasEditMemo = memo(CanvasEdit);
 
 export default function CanvasWrapper(
-  props: CanvasWrapperProps & { onSetSocials: (socials: Socials) => void }
+  props: CanvasEditProps & { onSetSocials: (socials: Socials) => void }
 ) {
-  const {
-    isEditMode,
-    drawColor,
-    isEraseMode,
-    onColorPixel,
-    onErasePixel,
-    onSetSocials,
-    forceUpdate,
-  } = props;
-  const [canvasLayout, setCanvasLayout] = useState<CanvasLayout>(
+  const { onSetSocials, ...canvasEditProps } = props;
+  const [canvasReadonly, setCanvasReadonly] = useState<CanvasLayout>(
     getDefaultCanvas()
   );
   const isInitialRender = useRef(true);
@@ -52,16 +45,22 @@ export default function CanvasWrapper(
     )
   );
 
+  const canvasReadonlyProps: CanvasReadonlyProps = {
+    squareSize,
+    isEditMode: canvasEditProps.isEditMode,
+    canvasReadonly,
+  };
+
   useEffect(() => {
     const updateCanvas = (event: MetadataAccountParsed) => {
       const [newCanvas] = getUpdatedCanvas(event);
-      setCanvasLayout([...newCanvas]);
+      setCanvasReadonly([...newCanvas]);
     };
 
     const onInitAndGetCanvas = async () => {
       const endpoint = localStorage.getItem(RPC_URL_KEY) || "";
       const initialCanvas = await initAndGetCanvas(endpoint);
-      setCanvasLayout(initialCanvas);
+      setCanvasReadonly(initialCanvas);
     };
 
     if (isInitialRender.current) {
@@ -69,25 +68,14 @@ export default function CanvasWrapper(
       setEventHandler(updateCanvas);
       onInitAndGetCanvas();
     }
-  }, [canvasLayout, setEventHandler]);
+  }, [canvasReadonly, setEventHandler]);
   return (
     <div id="canvas wrapper" className="flex">
       <CanvasReadonly
-        squareSize={squareSize}
-        isEditMode={isEditMode}
-        canvasReadonly={canvasLayout}
+        {...canvasReadonlyProps}
         onSetSocials={onSetSocials}
       ></CanvasReadonly>
-      <CanvasEditMemo
-        isEditMode={isEditMode}
-        drawColor={drawColor}
-        isEraseMode={isEraseMode}
-        onColorPixel={onColorPixel}
-        onErasePixel={onErasePixel}
-        forceUpdate={forceUpdate}
-        squareSize={squareSize}
-        canvasReadonly={canvasLayout}
-      ></CanvasEditMemo>
+      <CanvasEditMemo {...canvasReadonlyProps} {...canvasEditProps}></CanvasEditMemo>
     </div>
   );
 }

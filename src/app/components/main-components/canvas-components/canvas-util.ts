@@ -269,6 +269,14 @@ const getLatestCanvas = async (endpoint: string) => {
   return canvas;
 };
 
+export const getEmptyCanvas = () => {
+  const socials = getDefaultSocials();
+  return Array.from({ length: PX_HEIGHT * PX_WIDTH }, () => ({
+    color: "",
+    socials,
+  }));
+};
+
 export const initAndGetCanvas = async (endpoint?: string) => {
   try {
     if (endpoint && (await isHealthyEndpoint(endpoint))) {

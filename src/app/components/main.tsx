@@ -25,7 +25,7 @@ export default function Main() {
       : DEFAULT_COLOR
   );
   const [open, setOpen] = useState(false);
-  const [image, setImage] = useState<PixelArray>([]);
+  const [pixelArray, setPixelArray] = useState<PixelArray>([]);
   const [update, setUpdate] = useState(false);
   const menuRef = useRef(null);
   const coloredPixelsDict = useRef<ColoredPixelsDict>({});
@@ -81,8 +81,12 @@ export default function Main() {
   }, []);
 
   const onSaveImage = (pixelArray: PixelArray) => {
-    setImage(pixelArray);
+    setPixelArray(pixelArray);
     handleClose();
+  };
+
+  const onClearImage = () => {
+    setPixelArray([]);
   };
 
   const enableEraseMode = () => {
@@ -128,6 +132,8 @@ export default function Main() {
     onColorPixel,
     onErasePixel,
     actionStamped,
+    pixelArray,
+    onClearImage,
   };
 
   const menuSectionProps: MenuSectionProps = {

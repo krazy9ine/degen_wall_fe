@@ -52,6 +52,8 @@ export interface CanvasEditProps {
   onErasePixel: (index: number) => void;
   forceUpdate: (isNewAction?: boolean) => void;
   actionStamped: ActionStamped;
+  pixelArray: PixelArray;
+  onClearImage: () => void;
 }
 
 export interface UploadPopupProps {
@@ -64,7 +66,10 @@ export type ColoredPixelsDict = {
   [key: number]: string;
 };
 
-export type ColorPixelPointers = { prevColor?: string; newColor?: string };
+export type ColorPixelPointers = {
+  prevColor?: string;
+  newColor?: string;
+};
 
 export type ColoredPixelsActionsDict = {
   [key: number]: ColorPixelPointers;

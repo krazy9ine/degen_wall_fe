@@ -96,6 +96,7 @@ export default function SettingsMenu() {
           <button onClick={save}>Save</button>
         </div>
       </BackdropCommon>
+      <button>Pay</button>
     </div>
   );
 }

@@ -8,7 +8,7 @@ export default function BackdropCommon(props: CommonBackdropProps) {
       open={open}
       sx={(theme) => ({
         color: "#fff",
-        zIndex: theme.zIndex.drawer + 1,
+        zIndex: theme.zIndex.mobileStepper, // this is the only one lower than wallet modal
         ...sx,
       })}
     >

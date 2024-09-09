@@ -1,24 +1,32 @@
-import { AnchorProvider, Program } from "@coral-xyz/anchor";
+import { AnchorProvider, Program, web3 } from "@coral-xyz/anchor";
 import {
   AccountStruct,
   AnchorArray,
   BorshDeserializeParams,
+  ColoredPixelsDict,
   ConstantType,
   FieldType,
   MetadataAccount,
   MetadataAccountCreatedEvent,
   MetadataAccountParsed,
+  Socials,
   StringType,
   validateString,
 } from "../types";
 import * as borsh from "@coral-xyz/borsh";
-import { Connection } from "@solana/web3.js";
+import { Connection, Keypair, PublicKey } from "@solana/web3.js";
 import bs58 from "bs58";
 import { DegenWall } from "./degen_wall";
 import IDL from "./idl.json";
 import { AnchorWallet } from "@solana/wallet-adapter-react";
 
 const STRING_OFFSET = 4;
+const AUTHORITY_BUFFER = new PublicKey(
+  "H3v4uZwVuoCHDyTFezH196wUHxmm7NfBH2yxzUB6MpDZ"
+).toBuffer();
+const TREASURY_PUBLICKEY = new PublicKey(
+  "AWJQAWxPE3hJz2XVrJDmBDdQk4pC2SjeKpLFhjUncCKM"
+);
 
 export default class AnchorInterface {
   private program: Program<DegenWall>;
@@ -96,6 +104,82 @@ export default class AnchorInterface {
     return accountsDeserialized
       .map((account) => this.getParsedAccount(account))
       .sort((a, b) => b.timestamp - a.timestamp);
+  }
+
+  async createMetadataAccount(socials: Socials, dataRAW: ColoredPixelsDict) {
+    const {
+      token,
+      website,
+      twitter,
+      community,
+      image,
+      name,
+      ticker,
+      description,
+      payer,
+    } = socials;
+    console.log("here");
+    const payer_publickey = new PublicKey("H3v4uZwVuoCHDyTFezH196wUHxmm7NfBH2yxzUB6MpDZ");
+    console.log("here");
+    const token_publickey = new PublicKey(token);
+    console.log("here");
+    const id = Array.from(Keypair.generate().publicKey.toBytes());
+    console.log("here");
+    const ID_SEED = Buffer.from(id);
+    console.log('here')
+    const PAYER_SEED = payer_publickey.toBuffer();
+    console.log('here')
+    const [sol_treasury_account] = web3.PublicKey.findProgramAddressSync(
+      [this.SEED_PREFIX, AUTHORITY_BUFFER],
+      this.program.programId
+    );
+    console.log('here')
+    const [metadata_account] = web3.PublicKey.findProgramAddressSync(
+      [this.SEED_PREFIX, PAYER_SEED, ID_SEED],
+      this.program.programId
+    );
+    console.log('here')
+    const data = this.formatData(dataRAW);
+    console.log('here')
+    await this.program.methods
+      .createMetadataAccount({
+        id,
+        token,
+        data,
+        website,
+        twitter,
+        community,
+        image,
+        name,
+        ticker,
+        description,
+      })
+      .accounts({
+        authority: payer_publickey, //@ts-ignore
+        metadataAccount: metadata_account,
+        solTreasuryAccount: sol_treasury_account,
+        treasury: TREASURY_PUBLICKEY,
+        token: token_publickey,
+      })
+      .rpc();
+  }
+
+  private formatData(dataRAW: ColoredPixelsDict) {
+    const data: number[] = [];
+    for (const [indexString, color] of Object.entries(dataRAW)) {
+      const index = Number(indexString);
+      const bigint = parseInt(color, 16);
+      const x = index % this.PX_WIDTH;
+      const y = Math.floor(index / this.PX_WIDTH);
+      const r = (bigint >> 16) & 255;
+      const g = (bigint >> 8) & 255;
+      const b = bigint & 255;
+      data.push(x, y, r, g, b);
+    }
+    while (data.length < this.MAX_DATA_SIZE) {
+      data.push(255);
+    }
+    return data;
   }
 
   private getParsedEvent(event: MetadataAccountCreatedEvent) {

@@ -1,24 +1,43 @@
 import { BackdropCommon, ConnectWalletButton } from "@/app/common";
 import { NAME_LENGTH, TICKER_LENGTH } from "@/app/constants";
+import { AnchorContext } from "@/app/context/AnchorProvider";
 import { PayPopupProps, Socials } from "@/app/types";
 import { isValidAddress } from "@/app/web3/misc";
-import { HTMLInputTypeAttribute, useEffect, useRef, useState } from "react";
+import {
+  HTMLInputTypeAttribute,
+  useContext,
+  useEffect,
+  useRef,
+  useState,
+} from "react";
 import urlRegex from "url-regex";
 
 const capitalize = (str: string) => str.charAt(0).toUpperCase() + str.slice(1);
+const emptySocials: Socials = {
+  payer: "",
+  name: "",
+  ticker: "",
+  token: "",
+  website: "",
+  twitter: "",
+  community: "",
+  description: "",
+  image: "",
+};
 
 export default function PayPopup(props: PayPopupProps) {
   const { popupPay, onClosePopupPay, coloredPixelsDict } = props;
   const menuRef = useRef<HTMLDivElement>(null);
-  const [socials, setSocials] = useState<Socials>({});
-  const [errorLabels, setErrorLabels] = useState<Socials>({});
+  const anchorContext = useContext(AnchorContext);
+  const [socials, setSocials] = useState<Socials>(emptySocials);
+  const [errorLabels, setErrorLabels] = useState<Socials>(emptySocials);
   const isInitialRender = useRef(true);
 
   useEffect(() => {
     if (popupPay && isInitialRender.current) {
       isInitialRender.current = false;
-      setSocials({});
-      setErrorLabels({});
+      setSocials(emptySocials);
+      setErrorLabels(emptySocials);
     } else if (!popupPay) {
       isInitialRender.current = true;
     }
@@ -105,6 +124,12 @@ export default function PayPopup(props: PayPopupProps) {
     }));
   };
 
+  const onPay = () => {
+    if (anchorContext) {
+      anchorContext.createMetadataAccount(socials, coloredPixelsDict);
+    }
+  };
+
   const TextField = (props: {
     id: keyof Socials;
     type: HTMLInputTypeAttribute;
@@ -155,7 +180,7 @@ export default function PayPopup(props: PayPopupProps) {
             validate: validateDescription,
           })}
         </div>
-        <button>Pay</button>
+        <button onClick={onPay}>Pay</button>
       </div>
     </BackdropCommon>
   );

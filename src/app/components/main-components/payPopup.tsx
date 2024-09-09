@@ -11,12 +11,14 @@ export default function PayPopup(props: PayPopupProps) {
   const { popupPay, onClosePopupPay, coloredPixelsDict } = props;
   const menuRef = useRef<HTMLDivElement>(null);
   const [socials, setSocials] = useState<Socials>({});
+  const [errorLabels, setErrorLabels] = useState<Socials>({});
   const isInitialRender = useRef(true);
 
   useEffect(() => {
     if (popupPay && isInitialRender.current) {
       isInitialRender.current = false;
       setSocials({});
+      setErrorLabels({});
     } else if (!popupPay) {
       isInitialRender.current = true;
     }
@@ -25,13 +27,25 @@ export default function PayPopup(props: PayPopupProps) {
   const validateName = (name: string) => {
     if (name.length > NAME_LENGTH) {
       console.warn(`Name can't be bigger than ${NAME_LENGTH}`);
-    } else setSocials((prevSocials) => ({ ...prevSocials, name }));
+    } else {
+      setSocials((prevSocials) => ({ ...prevSocials, name }));
+      setErrorLabels((prevErrorLabels) => ({
+        ...prevErrorLabels,
+        name: "Placeholder error",
+      }));
+    }
   };
 
   const validateTicker = (ticker: string) => {
     if (ticker.length > TICKER_LENGTH) {
       console.warn(`Name can't be bigger than ${NAME_LENGTH}`);
-    } else setSocials((prevSocials) => ({ ...prevSocials, ticker }));
+    } else {
+      setSocials((prevSocials) => ({ ...prevSocials, ticker }));
+      setErrorLabels((prevErrorLabels) => ({
+        ...prevErrorLabels,
+        ticker: "Placeholder error",
+      }));
+    }
   };
 
   const isValidUrl = (urlString: string) => {
@@ -41,30 +55,54 @@ export default function PayPopup(props: PayPopupProps) {
   const validateWebsite = (website: string) => {
     if (!isValidUrl(website)) console.warn("Invalid url for website");
     setSocials((prevSocials) => ({ ...prevSocials, website }));
+    setErrorLabels((prevErrorLabels) => ({
+      ...prevErrorLabels,
+      website: "Placeholder error",
+    }));
   };
 
   const validateTwitter = (twitter: string) => {
     if (!isValidUrl(twitter)) console.warn("Invalid url for twitter");
     setSocials((prevSocials) => ({ ...prevSocials, twitter }));
+    setErrorLabels((prevErrorLabels) => ({
+      ...prevErrorLabels,
+      twitter: "Placeholder error",
+    }));
   };
 
   const validateCommunity = (community: string) => {
     if (!isValidUrl(community)) console.warn("Invalid url for community");
     setSocials((prevSocials) => ({ ...prevSocials, community }));
+    setErrorLabels((prevErrorLabels) => ({
+      ...prevErrorLabels,
+      community: "Placeholder error",
+    }));
   };
 
   const validateImage = (image: string) => {
     if (!isValidUrl(image)) console.warn("Invalid url for image");
     setSocials((prevSocials) => ({ ...prevSocials, image }));
+    setErrorLabels((prevErrorLabels) => ({
+      ...prevErrorLabels,
+      image: "Placeholder error",
+    }));
   };
 
   const validateToken = (token: string) => {
     if (!isValidAddress(token)) console.warn("Invalid tokenAddress");
     setSocials((prevSocials) => ({ ...prevSocials, token }));
+    setErrorLabels((prevErrorLabels) => ({
+      ...prevErrorLabels,
+      token: "Placeholder error",
+    }));
   };
 
   const validateDescription = (description: string) => {
     setSocials((prevSocials) => ({ ...prevSocials, description }));
+    setErrorLabels((prevErrorLabels) => ({
+      ...prevErrorLabels,
+      description: "Placeholder error",
+    }));
   };
 
   const TextField = (props: {
@@ -87,13 +125,14 @@ export default function PayPopup(props: PayPopupProps) {
             onChange={(event) => validate(event.target.value)}
           ></input>
         </div>
+        <label htmlFor={`${key}`}>{errorLabels[key]}</label>
       </div>
     );
   };
 
   return (
     <BackdropCommon open={popupPay}>
-      <div ref={menuRef} className="bg-green-100 text-black">
+      <div ref={menuRef} className="bg-green-100 text-black relative">
         <ConnectWalletButton></ConnectWalletButton>
         <button className="absolute top-0 right-0" onClick={onClosePopupPay}>
           X
@@ -108,7 +147,7 @@ export default function PayPopup(props: PayPopupProps) {
             type: "url",
             validate: validateCommunity,
           })}
-          {TextField({ id: "community", type: "url", validate: validateImage })}
+          {TextField({ id: "image", type: "url", validate: validateImage })}
           {TextField({ id: "token", type: "text", validate: validateToken })}
           {TextField({
             id: "description",

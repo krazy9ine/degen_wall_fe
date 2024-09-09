@@ -73,6 +73,15 @@ export default function MenuSection(props: MenuSectionProps) {
         </button>
       </div>
       <div id="menu-rightside">
+        <button
+          disabled={
+            !coloredPixelsCount ||
+            coloredPixelsCount > MAX_PX_NR * MAX_JITO_TX_NR
+          }
+          style={{ display: coloredPixelsCount ? "inline" : "none" }}
+        >
+          Pay
+        </button>
         <span
           style={{
             color:

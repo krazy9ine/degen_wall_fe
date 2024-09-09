@@ -13,7 +13,7 @@ const MAX_PX_SIZE = (MAX_DATA_SIZE * MAX_JITO_TX_NR) / PX_SIZE;
 const UNEXPECTED_ERROR_MESSAGE = "Unexpected error";
 
 export default function UploadPopup(props: UploadPopupProps) {
-  const { open, onClose, onSaveImage } = props;
+  const { popupUpload, onClosePopupUpload, onSaveImage } = props;
   const menuRef = useRef<HTMLDivElement>(null);
   const [pixelArray, setPixelArray] = useState<PixelArray>([]);
   const [errorMessage, setErrorMesage] = useState("");
@@ -128,10 +128,10 @@ export default function UploadPopup(props: UploadPopupProps) {
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
       if (menuRef.current && !menuRef.current.contains(event.target as Node)) {
-        onClose();
+        onClosePopupUpload();
       }
     };
-    if (open) {
+    if (popupUpload) {
       document.addEventListener("mousedown", handleClickOutside);
     } else {
       document.removeEventListener("mousedown", handleClickOutside);
@@ -139,12 +139,12 @@ export default function UploadPopup(props: UploadPopupProps) {
     return () => {
       document.removeEventListener("mousedown", handleClickOutside);
     };
-  }, [open, onClose]);
+  }, [popupUpload, onClosePopupUpload]);
 
   return (
     <Backdrop
       sx={(theme) => ({ color: "#fff", zIndex: theme.zIndex.drawer + 1 })}
-      open={open}
+      open={popupUpload}
     >
       <div ref={menuRef} className="bg-black">
         <input

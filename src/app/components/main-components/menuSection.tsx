@@ -17,8 +17,16 @@ export default function MenuSection(props: MenuSectionProps) {
     enterEditMode,
     enableEraseMode,
     exitEditMode,
-    handleOpen,
+    onOpenPopupUpload,
+    onOpenPopupPay,
   } = props;
+
+  const handleOpenPopupPay = () => {
+    coloredPixelsCount > MAX_PX_NR * MAX_JITO_TX_NR
+      ? console.warn("Too many pixels you fat nigga")
+      : onOpenPopupPay();
+  };
+
   return (
     <div id="menu" className="flex justify-between mt-2">
       <div id="menu-leftside" className="flex gap-2">
@@ -46,7 +54,7 @@ export default function MenuSection(props: MenuSectionProps) {
         <button
           disabled={!isEditMode}
           style={{ opacity: isEditMode ? 1 : 0 }}
-          onClick={handleOpen}
+          onClick={onOpenPopupUpload}
         >
           Upload
         </button>
@@ -74,11 +82,9 @@ export default function MenuSection(props: MenuSectionProps) {
       </div>
       <div id="menu-rightside">
         <button
-          disabled={
-            !coloredPixelsCount ||
-            coloredPixelsCount > MAX_PX_NR * MAX_JITO_TX_NR
-          }
+          disabled={!coloredPixelsCount}
           style={{ display: coloredPixelsCount ? "inline" : "none" }}
+          onClick={handleOpenPopupPay}
         >
           Pay
         </button>

@@ -57,9 +57,14 @@ export interface CanvasEditProps {
 }
 
 export interface UploadPopupProps {
-  open: boolean;
-  onClose: () => void;
+  popupUpload: boolean;
+  onClosePopupUpload: () => void;
   onSaveImage: (pixelArray: PixelArray) => void;
+}
+
+export interface PayPopupProps {
+  popupPay: boolean;
+  onClosePopupPay: () => void;
 }
 
 export type ColoredPixelsDict = {
@@ -89,7 +94,8 @@ export type MenuSectionProps = {
   enterEditMode: () => void;
   enableEraseMode: () => void;
   exitEditMode: () => void;
-  handleOpen: () => void;
+  onOpenPopupUpload: () => void;
+  onOpenPopupPay: () => void;
 };
 
 export type MetadataAccountCreatedEvent = {

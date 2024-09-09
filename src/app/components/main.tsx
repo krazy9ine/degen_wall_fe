@@ -1,17 +1,23 @@
-import { useCallback, useEffect, useRef, useState } from "react";
-import { CanvasWrapper, MenuSection, SocialsSection } from "./main-components";
+import { useCallback, useRef, useState } from "react";
+import {
+  CanvasWrapper,
+  MenuSection,
+  SocialsSection,
+  UploadPopup,
+  PayPopup,
+} from "./main-components";
 import {
   Action,
   ActionStamped,
   CanvasEditProps,
   ColoredPixelsDict,
   MenuSectionProps,
+  PayPopupProps,
   PixelArray,
   Socials,
   UploadPopupProps,
 } from "../types";
 import { ERASE_PIXELS_CODE } from "../constants";
-import UploadPopup from "./main-components/uploadPopup";
 
 const DEFAULT_COLOR = "ffffff";
 const DEFAULT_COLOR_KEY = "color";
@@ -24,10 +30,10 @@ export default function Main() {
       ? localStorage.getItem(DEFAULT_COLOR_KEY) || DEFAULT_COLOR
       : DEFAULT_COLOR
   );
-  const [open, setOpen] = useState(false);
+  const [popupUpload, setPopupUpload] = useState(false);
+  const [popupPay, setPopupPay] = useState(false);
   const [pixelArray, setPixelArray] = useState<PixelArray>([]);
   const [update, setUpdate] = useState(false);
-  const menuRef = useRef(null);
   const coloredPixelsDict = useRef<ColoredPixelsDict>({});
   const changesPending = useRef(false);
   const [socials, setSocials] = useState<Socials>();
@@ -82,7 +88,7 @@ export default function Main() {
 
   const onSaveImage = (pixelArray: PixelArray) => {
     setPixelArray(pixelArray);
-    handleClose();
+    onClosePopupUpload();
   };
 
   const onClearImage = () => {
@@ -116,12 +122,20 @@ export default function Main() {
     }
   };
 
-  const handleOpen = () => {
-    setOpen(true);
+  const onOpenPopupUpload = () => {
+    setPopupUpload(true);
   };
 
-  const handleClose = () => {
-    setOpen(false);
+  const onClosePopupUpload = () => {
+    setPopupUpload(false);
+  };
+
+  const onOpenPopupPay = () => {
+    setPopupPay(true);
+  };
+
+  const onClosePopupPay = () => {
+    setPopupPay(false);
   };
 
   const canvasEditProps: CanvasEditProps = {
@@ -148,33 +162,18 @@ export default function Main() {
     enterEditMode,
     enableEraseMode,
     exitEditMode,
-    handleOpen,
+    onOpenPopupUpload,
+    onOpenPopupPay,
   };
   const uploadPopupProps: UploadPopupProps = {
-    open,
-    onClose: handleClose,
+    popupUpload,
+    onClosePopupUpload,
     onSaveImage,
   };
-
-  useEffect(() => {
-    const handleClickOutside = (event: MouseEvent) => {
-      //@ts-ignore
-      if (menuRef.current && !menuRef.current.contains(event.target)) {
-        handleClose();
-      }
-    };
-
-    if (open) {
-      document.addEventListener("mousedown", handleClickOutside);
-    } else {
-      document.removeEventListener("mousedown", handleClickOutside);
-    }
-
-    // Cleanup the event listener on component unmount
-    return () => {
-      document.removeEventListener("mousedown", handleClickOutside);
-    };
-  }, [open]);
+  const payPopupProps: PayPopupProps = {
+    popupPay,
+    onClosePopupPay,
+  };
 
   return (
     <main>
@@ -187,6 +186,7 @@ export default function Main() {
       </div>
       <SocialsSection {...socials} isEditMode={isEditMode}></SocialsSection>
       <UploadPopup {...uploadPopupProps}></UploadPopup>
+      <PayPopup {...payPopupProps}></PayPopup>
     </main>
   );
 }

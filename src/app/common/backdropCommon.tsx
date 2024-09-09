@@ -1,10 +1,10 @@
-import { Backdrop as BackdropMUI } from "@mui/material";
+import { Backdrop } from "@mui/material";
 import { CommonBackdropProps } from "../types";
 
 export default function BackdropCommon(props: CommonBackdropProps) {
   const { open, sx, children } = props;
   return (
-    <BackdropMUI
+    <Backdrop
       open={open}
       sx={(theme) => ({
         color: "#fff",
@@ -13,6 +13,6 @@ export default function BackdropCommon(props: CommonBackdropProps) {
       })}
     >
       {children}
-    </BackdropMUI>
+    </Backdrop>
   );
 }

@@ -7,8 +7,8 @@ import {
 import { ReactNode } from "react";
 
 export type Socials = {
-  payer?: string;
-  token?: string;
+  payer: string;
+  token: string;
   website?: string;
   twitter?: string;
   community?: string;

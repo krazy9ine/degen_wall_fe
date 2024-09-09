@@ -20,15 +20,6 @@ export default function UploadPopup(props: UploadPopupProps) {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
-  const handleSave = () => {
-    onSaveImage(pixelArray);
-    setPixelArray([]);
-    resetCanvas();
-    if (fileInputRef.current) {
-      fileInputRef.current.value = "";
-    }
-  };
-
   const resetCanvas = () => {
     const canvas = canvasRef.current;
     if (!canvas) return;
@@ -37,10 +28,27 @@ export default function UploadPopup(props: UploadPopupProps) {
     ctx.clearRect(0, 0, canvas.width, canvas.height);
   };
 
+  const clearStuff = () => {
+    setErrorMesage("");
+    setPixelArray([]);
+    resetCanvas();
+  };
+
+  const handleSave = () => {
+    onSaveImage(pixelArray);
+    setPixelArray([]);
+    if (fileInputRef.current) {
+      fileInputRef.current.value = "";
+    }
+    clearStuff();
+    if (fileInputRef.current) {
+      fileInputRef.current.value = "";
+    }
+  };
+
   const handleImageChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     try {
-      setErrorMesage("");
-      setPixelArray([]);
+      clearStuff();
       const file = event.target.files?.[0];
       if (file) {
         if (!file.type.startsWith("image/"))

@@ -1,3 +1,4 @@
+import { BackdropCommon } from "@/app/common";
 import {
   MAX_DATA_SIZE,
   MAX_JITO_TX_NR,
@@ -5,8 +6,7 @@ import {
   PX_SIZE,
   PX_WIDTH,
 } from "@/app/constants";
-import { PixelArray, UploadPopupProps } from "@/app/types";
-import { Backdrop } from "@mui/material";
+import {  PixelArray, UploadPopupProps } from "@/app/types";
 import { useRef, useEffect, useState } from "react";
 
 const MAX_PX_SIZE = (MAX_DATA_SIZE * MAX_JITO_TX_NR) / PX_SIZE;
@@ -142,10 +142,7 @@ export default function UploadPopup(props: UploadPopupProps) {
   }, [popupUpload, onClosePopupUpload]);
 
   return (
-    <Backdrop
-      sx={(theme) => ({ color: "#fff", zIndex: theme.zIndex.drawer + 1 })}
-      open={popupUpload}
-    >
+    <BackdropCommon open={popupUpload}>
       <div ref={menuRef} className="bg-black">
         <input
           ref={fileInputRef}
@@ -164,6 +161,6 @@ export default function UploadPopup(props: UploadPopupProps) {
           {errorMessage}
         </span>
       </div>
-    </Backdrop>
+    </BackdropCommon>
   );
 }

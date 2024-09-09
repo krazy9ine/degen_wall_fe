@@ -1,6 +1,7 @@
+import { BackdropCommon } from "@/app/common";
 import { RPC_URL_KEY } from "@/app/constants";
 import { RPCContext } from "@/app/context/RPCProvider";
-import { Backdrop, Switch } from "@mui/material";
+import { Switch } from "@mui/material";
 import { useContext, useEffect, useRef, useState } from "react";
 
 export default function SettingsMenu() {
@@ -80,10 +81,7 @@ export default function SettingsMenu() {
   return (
     <div>
       <button onClick={handleOpen}>Settings</button>
-      <Backdrop
-        sx={(theme) => ({ color: "#fff", zIndex: theme.zIndex.drawer + 1 })}
-        open={open}
-      >
+      <BackdropCommon open={open}>
         <div ref={menuRef} className="bg-black flex gap-2">
           <Switch checked={isCustomRPC} onChange={toggleSwitch}></Switch>
           <span>RPC URL</span>
@@ -97,7 +95,7 @@ export default function SettingsMenu() {
           ></input>
           <button onClick={save}>Save</button>
         </div>
-      </Backdrop>
+      </BackdropCommon>
     </div>
   );
 }

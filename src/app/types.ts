@@ -1,4 +1,10 @@
 import { web3, BN } from "@coral-xyz/anchor";
+import { Theme } from "@mui/material";
+import {
+  SystemStyleObject,
+  CSSSelectorObjectOrCssVariables,
+} from "@mui/system";
+import { ReactNode } from "react";
 
 export type Socials = {
   payer?: string;
@@ -65,6 +71,7 @@ export interface UploadPopupProps {
 export interface PayPopupProps {
   popupPay: boolean;
   onClosePopupPay: () => void;
+  coloredPixelsDict: ColoredPixelsDict;
 }
 
 export type ColoredPixelsDict = {
@@ -137,6 +144,12 @@ export type MetadataAccount = {
   socials: string;
 };
 
+export interface CommonBackdropProps {
+  open: boolean;
+  children: ReactNode;
+  sx?: SystemStyleObject<Theme> | CSSSelectorObjectOrCssVariables<Theme>;
+}
+
 export type AnchorPrimitive =
   | "u8"
   | "u16"
@@ -172,7 +185,10 @@ export type ConstantType =
   | "pxHeight"
   | "dataDelimiter"
   | "maxSocialsSize"
-  | "stringDelimiter";
+  | "stringDelimiter"
+  | "nameLength"
+  | "tickerLength"
+  | "twitterLength";
 
 export type FieldType = {
   name: string;

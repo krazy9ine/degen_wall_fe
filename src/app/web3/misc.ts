@@ -1,4 +1,4 @@
-import { Connection } from "@solana/web3.js";
+import { Connection, PublicKey } from "@solana/web3.js";
 
 export const isHealthyEndpoint = async (endpoint: string) => {
   try {
@@ -8,6 +8,15 @@ export const isHealthyEndpoint = async (endpoint: string) => {
     return false;
   } catch (error) {
     console.error(`Error checking endpoint ${endpoint}: ${error}`);
+    return false;
+  }
+};
+
+export const isValidAddress = (address: string) => {
+  try {
+    new PublicKey(address);
+    return true;
+  } catch (error) {
     return false;
   }
 };

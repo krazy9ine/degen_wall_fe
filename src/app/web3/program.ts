@@ -30,6 +30,9 @@ export default class AnchorInterface {
   public readonly DATA_DELIMITER: number;
   public readonly MAX_SOCIALS_SIZE: number;
   public readonly STRING_DELIMITER: string;
+  public readonly NAME_LENGTH: number;
+  public readonly TICKER_LENGTH: number;
+  public readonly TWITTER_LENGTH: number;
 
   constructor(connection: Connection, wallet?: AnchorWallet) {
     const provider = wallet
@@ -43,6 +46,9 @@ export default class AnchorInterface {
     this.DATA_DELIMITER = this.getNumberValue("dataDelimiter");
     this.MAX_SOCIALS_SIZE = this.getNumberValue("maxSocialsSize");
     this.STRING_DELIMITER = this.getConstantValue("stringDelimiter");
+    this.NAME_LENGTH = this.getNumberValue("nameLength");
+    this.TICKER_LENGTH = this.getNumberValue("tickerLength");
+    this.TWITTER_LENGTH = this.getNumberValue("twitterLength");
   }
 
   updateProgram(connection: Connection, wallet: AnchorWallet) {

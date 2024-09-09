@@ -173,6 +173,7 @@ export default function Main() {
   const payPopupProps: PayPopupProps = {
     popupPay,
     onClosePopupPay,
+    coloredPixelsDict: coloredPixelsDict.current,
   };
 
   return (

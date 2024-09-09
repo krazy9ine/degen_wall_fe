@@ -33,6 +33,7 @@ export default class AnchorInterface {
   public readonly NAME_LENGTH: number;
   public readonly TICKER_LENGTH: number;
   public readonly TWITTER_LENGTH: number;
+  public readonly SEED_PREFIX: Uint8Array;
 
   constructor(connection: Connection, wallet?: AnchorWallet) {
     const provider = wallet
@@ -49,6 +50,14 @@ export default class AnchorInterface {
     this.NAME_LENGTH = this.getNumberValue("nameLength");
     this.TICKER_LENGTH = this.getNumberValue("tickerLength");
     this.TWITTER_LENGTH = this.getNumberValue("twitterLength");
+    this.SEED_PREFIX = Buffer.from(
+      String.fromCharCode(
+        ...this.getConstantValue("seedPrefix")
+          .replace(/[\[\]\s]/g, "")
+          .split(",")
+          .map(Number)
+      )
+    );
   }
 
   updateProgram(connection: Connection, wallet: AnchorWallet) {

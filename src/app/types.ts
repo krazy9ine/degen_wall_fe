@@ -188,7 +188,8 @@ export type ConstantType =
   | "stringDelimiter"
   | "nameLength"
   | "tickerLength"
-  | "twitterLength";
+  | "twitterLength"
+  | "seedPrefix";
 
 export type FieldType = {
   name: string;

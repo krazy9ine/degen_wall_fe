@@ -24,4 +24,5 @@ export const {
   NAME_LENGTH,
   TICKER_LENGTH,
   TWITTER_LENGTH,
+  SEED_PREFIX,
 } = anchorInterface;

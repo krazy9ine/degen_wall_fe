@@ -32,6 +32,7 @@ export default function CanvasEdit(
   const isInitialRender = useRef(true);
   const canvasEditable = useRef<CanvasLayout>([]);
   const canvasReadonlyCopy = useRef<CanvasLayout>([]);
+  const canvasChangesTracker = useRef(Array.from({ length: 5000 }, () => ""));
   const coloredPixelsActionsDict = useRef<ColoredPixelsActionsDict>({});
   const canvasActions = useRef<ColoredPixelsActionsDict[]>([]);
   const canvasActionsUndoed = useRef<ColoredPixelsActionsDict[]>([]);
@@ -54,6 +55,7 @@ export default function CanvasEdit(
       canvasActions.current = [];
       canvasActionsUndoed.current = [];
       latestAction.current = null;
+      canvasChangesTracker.current = Array.from({ length: 5000 }, () => "");
     }
   }, [isEditMode, canvasReadonly]);
 
@@ -111,7 +113,26 @@ export default function CanvasEdit(
       }
     };
 
-    const addPixelAction = (index: number, color?: string) => {
+    const addPixelAction = (index: number, newColor: string = "") => {
+      const prevColor = canvasChangesTracker.current[index];
+      if (
+        !coloredPixelsActionsDict.current[index] &&
+        (newColor || canvasChangesTracker.current[index])
+      ) {
+        coloredPixelsActionsDict.current = {
+          ...coloredPixelsActionsDict.current,
+          [index]: {
+            prevColor,
+            newColor,
+          },
+        };
+        canvasChangesTracker.current[index] = newColor;
+        canvasEditable.current[index].color =
+          newColor || canvasReadonlyCopy.current[index].color;
+        if (canvasActionsUndoed.current.length)
+          canvasActionsUndoed.current = [];
+      }
+      /*
       const action = coloredPixelsActionsDict.current[index];
       if (action?.newColor !== color) {
         coloredPixelsActionsDict.current = {
@@ -123,6 +144,7 @@ export default function CanvasEdit(
         };
         canvasActionsUndoed.current = [];
       }
+        */
     };
     const addCanvasAction = () => {
       const action = coloredPixelsActionsDict.current;
@@ -138,8 +160,9 @@ export default function CanvasEdit(
       key: keyof ColorPixelPointers
     ) => {
       for (const [indexString, entry] of Object.entries(action)) {
-        const color = entry[key];
+        const color = entry[key] || "";
         const index = Number(indexString);
+        canvasChangesTracker.current[index] = color;
         if (!color) {
           canvasEditable.current[index].color =
             canvasReadonlyCopy.current[index].color;
@@ -199,7 +222,6 @@ export default function CanvasEdit(
                 const index = drawY * PX_WIDTH + drawX;
                 if (drawX < canvas.width && drawY < canvas.height) {
                   drawPixel(drawX, drawY, color);
-                  canvasEditable.current[index].color = color;
                   addPixelAction(index, color);
                   onColorPixel(index, color);
                 }
@@ -212,12 +234,10 @@ export default function CanvasEdit(
           if (isEraseMode) {
             const originalColor = canvasReadonlyCopy.current[index].color;
             drawPixel(x, y, originalColor);
-            canvasEditable.current[index].color = originalColor;
             addPixelAction(index);
             onErasePixel(index);
           } else {
             drawPixel(x, y, drawColor);
-            canvasEditable.current[index].color = drawColor;
             addPixelAction(index, drawColor);
             onColorPixel(index);
           }

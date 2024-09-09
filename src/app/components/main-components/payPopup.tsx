@@ -43,15 +43,15 @@ export default function PayPopup(props: PayPopupProps) {
     }
   }, [popupPay]);
 
+  const isValidUrl = (urlString: string) => {
+    return urlRegex({ strict: false, exact: true }).test(urlString);
+  };
+
   const validateName = (name: string) => {
     if (name.length > NAME_LENGTH) {
       console.warn(`Name can't be bigger than ${NAME_LENGTH}`);
     } else {
       setSocials((prevSocials) => ({ ...prevSocials, name }));
-      setErrorLabels((prevErrorLabels) => ({
-        ...prevErrorLabels,
-        name: "Placeholder error",
-      }));
     }
   };
 
@@ -60,15 +60,7 @@ export default function PayPopup(props: PayPopupProps) {
       console.warn(`Name can't be bigger than ${NAME_LENGTH}`);
     } else {
       setSocials((prevSocials) => ({ ...prevSocials, ticker }));
-      setErrorLabels((prevErrorLabels) => ({
-        ...prevErrorLabels,
-        ticker: "Placeholder error",
-      }));
     }
-  };
-
-  const isValidUrl = (urlString: string) => {
-    return urlRegex({ strict: false, exact: true }).test(urlString);
   };
 
   const validateWebsite = (website: string) => {

@@ -155,6 +155,7 @@ export default function PayPopup(props: PayPopupProps) {
             validate: validateDescription,
           })}
         </div>
+        <button>Pay</button>
       </div>
     </BackdropCommon>
   );

@@ -1,7 +1,7 @@
 "use client";
 
 import { createContext, useEffect, useRef } from "react";
-import AnchorInterface from "../web3/program";
+import AnchorInterface from "../web3/anchorInterface";
 import { useAnchorWallet, useConnection } from "@solana/wallet-adapter-react";
 
 export const AnchorContext = createContext<AnchorInterface | undefined>(

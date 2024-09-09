@@ -1,5 +1,5 @@
 import { Connection } from "@solana/web3.js";
-import AnchorInterface from "./web3/program";
+import AnchorInterface from "./web3/anchorInterface";
 
 export const WSOL_ADDRESS = "So11111111111111111111111111111111111111112";
 export const TOKEN_ADDRESS = "A4SvyMLMGXrHR8ahP7qotUrKvGD8KgbdAcLNs3nbVftE";

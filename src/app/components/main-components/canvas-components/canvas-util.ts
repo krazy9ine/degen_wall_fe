@@ -14,7 +14,7 @@ import {
   Socials,
 } from "@/app/types";
 import { isHealthyEndpoint } from "@/app/web3/misc";
-import AnchorInterface from "@/app/web3/program";
+import AnchorInterface from "@/app/web3/anchorInterface";
 import { Connection } from "@solana/web3.js";
 import urlRegex from "url-regex";
 

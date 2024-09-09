@@ -1,7 +1,7 @@
 "use client";
 
 import { createContext, useEffect, useRef } from "react";
-import AnchorInterface from "../web3/program";
+import AnchorInterface from "../web3/anchorInterface";
 import { useConnection } from "@solana/wallet-adapter-react";
 import { MetadataAccountParsed } from "../types";
 

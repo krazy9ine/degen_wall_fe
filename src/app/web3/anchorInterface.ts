@@ -118,29 +118,20 @@ export default class AnchorInterface {
       description,
       payer,
     } = socials;
-    console.log("here");
     const payer_publickey = new PublicKey("H3v4uZwVuoCHDyTFezH196wUHxmm7NfBH2yxzUB6MpDZ");
-    console.log("here");
     const token_publickey = new PublicKey(token);
-    console.log("here");
     const id = Array.from(Keypair.generate().publicKey.toBytes());
-    console.log("here");
     const ID_SEED = Buffer.from(id);
-    console.log('here')
     const PAYER_SEED = payer_publickey.toBuffer();
-    console.log('here')
     const [sol_treasury_account] = web3.PublicKey.findProgramAddressSync(
       [this.SEED_PREFIX, AUTHORITY_BUFFER],
       this.program.programId
     );
-    console.log('here')
     const [metadata_account] = web3.PublicKey.findProgramAddressSync(
       [this.SEED_PREFIX, PAYER_SEED, ID_SEED],
       this.program.programId
     );
-    console.log('here')
     const data = this.formatData(dataRAW);
-    console.log('here')
     await this.program.methods
       .createMetadataAccount({
         id,

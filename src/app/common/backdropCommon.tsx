@@ -1,8 +1,18 @@
 import { Backdrop } from "@mui/material";
 import { CommonBackdropProps } from "../types";
+import { useEffect, useState } from "react";
 
 export default function BackdropCommon(props: CommonBackdropProps) {
-  const { open, sx, children } = props;
+  const { children, sx = {}, open } = props;
+  //Hydration error on localhost
+  const [mounted, setMounted] = useState(false);
+  useEffect(() => {
+    setMounted(true);
+  }, []);
+
+  if (!mounted) {
+    return null;
+  }
   return (
     <Backdrop
       open={open}

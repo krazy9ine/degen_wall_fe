@@ -22,7 +22,6 @@ import IDL from "./idl.json";
 import { AnchorWallet } from "@solana/wallet-adapter-react";
 import eventEmitter from "../hooks/eventEmitter";
 import { DEFAULT_TOKEN, EVENT_NAME } from "../constantsUncircular";
-import { WSOL_ADDRESS } from "../constants";
 import { TOKEN_PROGRAM_ID } from "@coral-xyz/anchor/dist/cjs/utils/token";
 
 const STRING_OFFSET = 4;
@@ -135,7 +134,7 @@ export default class AnchorInterface {
       this.program.programId
     );
     const data = this.formatData(dataRAW);
-    if (paymentToken.address === WSOL_ADDRESS) {
+    if (paymentToken.address === DEFAULT_TOKEN) {
       const [sol_treasury_account] = web3.PublicKey.findProgramAddressSync(
         [this.SEED_PREFIX],
         this.program.programId

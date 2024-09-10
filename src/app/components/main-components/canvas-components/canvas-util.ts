@@ -5,7 +5,7 @@ import {
   PX_SIZE,
   PX_WIDTH,
   SERVER_URL,
-  WSOL_ADDRESS,
+  DEFAULT_TOKEN,
 } from "@/app/constants";
 import {
   CanvasLayout,
@@ -19,7 +19,6 @@ import { Connection } from "@solana/web3.js";
 import urlRegex from "url-regex";
 
 const DEFAULLT_PAYER = "DEGenPMwjmLCw9LmdvfCUK5M4XKrbep2rts4DDqG3J5x";
-const DEFAULT_TOKEN = WSOL_ADDRESS;
 const DEFAULT_WEBSITE = "https://cacat.com";
 const DEFAULT_TWITTER = "https://x.com";
 const DEFAULT_COMMUNITY = "https://t.me";

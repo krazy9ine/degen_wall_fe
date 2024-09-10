@@ -19,6 +19,7 @@ import bs58 from "bs58";
 import { DegenWall } from "./degen_wall";
 import IDL from "./idl.json";
 import { AnchorWallet } from "@solana/wallet-adapter-react";
+import { DEFAULT_TOKEN } from "../constants";
 
 const STRING_OFFSET = 4;
 const AUTHORITY_BUFFER = new PublicKey(
@@ -119,7 +120,7 @@ export default class AnchorInterface {
       payer,
     } = socials;
     const payer_publickey = new PublicKey("H3v4uZwVuoCHDyTFezH196wUHxmm7NfBH2yxzUB6MpDZ");
-    const token_publickey = new PublicKey(token);
+    const token_publickey = new PublicKey(token || DEFAULT_TOKEN);
     const id = Array.from(Keypair.generate().publicKey.toBytes());
     const ID_SEED = Buffer.from(id);
     const PAYER_SEED = payer_publickey.toBuffer();

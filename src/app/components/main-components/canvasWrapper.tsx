@@ -24,8 +24,9 @@ import {
 } from "./canvas-components/canvas-util";
 import { PX_HEIGHT, PX_WIDTH, RPC_URL_KEY } from "@/app/constants";
 import useWindowDimensions from "@/app/hooks/useWindowDimensions";
-import { AnchorContext } from "@/app/context/AnchorProvider";
 import { useConnection } from "@solana/wallet-adapter-react";
+import eventEmitter from "@/app/hooks/eventEmitter";
+import { EVENT_NAME } from "@/app/constantsUncircular";
 
 const CANVAS_DISPLAY_RATIO = 0.8;
 const SQUARE_MIN_SIZE = 8;
@@ -40,7 +41,6 @@ export default function CanvasWrapper(
     getDefaultCanvas()
   );
   const isInitialRender = useRef(true);
-  const anchorInterface = useContext(AnchorContext);
   const { connection } = useConnection();
   const { height, width } = useWindowDimensions();
 
@@ -58,20 +58,19 @@ export default function CanvasWrapper(
     canvasReadonly,
   };
 
-  const updateCanvas = useCallback(
-    (event: MetadataAccountParsed) => {
+  useEffect(() => {
+    const handleEvent = (event: MetadataAccountParsed) => {
       const newCanvas = getUpdatedCanvas(canvasReadonly, event) as CanvasLayout;
       setCanvasReadonly([...newCanvas]);
-    },
-    [canvasReadonly]
-  );
-
-  useEffect(() => {
-    if (anchorInterface) anchorInterface.registerEventListener(updateCanvas);
-    return () => {
-      if (anchorInterface) anchorInterface.unregisterEventListener();
     };
-  }, [anchorInterface, updateCanvas]);
+
+    eventEmitter.on(EVENT_NAME, handleEvent);
+
+    // Clean up the event listener on unmount
+    return () => {
+      eventEmitter.off(EVENT_NAME, handleEvent);
+    };
+  }, [canvasReadonly]);
 
   useEffect(() => {
     const onInitAndGetCanvas = async () => {

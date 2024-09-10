@@ -19,7 +19,8 @@ import bs58 from "bs58";
 import { DegenWall } from "./degen_wall";
 import IDL from "./idl.json";
 import { AnchorWallet } from "@solana/wallet-adapter-react";
-import { DEFAULT_TOKEN } from "../constants";
+import eventEmitter from "../hooks/eventEmitter";
+import { DEFAULT_TOKEN, EVENT_NAME } from "../constantsUncircular";
 
 const STRING_OFFSET = 4;
 const AUTHORITY_BUFFER = new PublicKey(
@@ -74,20 +75,21 @@ export default class AnchorInterface {
     this.program = new Program<DegenWall>(IDL as DegenWall, provider);
   }
 
-  registerEventListener(callback?: (event: MetadataAccountParsed) => void) {
+  registerEventListener() {
     this.listener = this.program.addEventListener(
-      "metadataAccountCreated",
+      EVENT_NAME,
       (eventRAW, _slot) => {
-        if (callback) {
-          const event = this.getParsedEvent(eventRAW);
-          callback(event);
-        }
+        console.log("in event");
+        const event = this.getParsedEvent(eventRAW);
+        eventEmitter.emit(EVENT_NAME, event);
       }
     );
+    console.log(`registering event listener with id ${this.listener}`);
   }
 
   unregisterEventListener() {
     try {
+      console.log(`unregistering event listener with id ${this.listener}`);
       this.program.removeEventListener(this.listener);
     } catch (error) {
       console.error(
@@ -119,7 +121,7 @@ export default class AnchorInterface {
       description,
       payer,
     } = socials;
-    const payer_publickey = new PublicKey("H3v4uZwVuoCHDyTFezH196wUHxmm7NfBH2yxzUB6MpDZ");
+    const payer_publickey = new PublicKey(payer);
     const token_publickey = new PublicKey(token || DEFAULT_TOKEN);
     const id = Array.from(Keypair.generate().publicKey.toBytes());
     const ID_SEED = Buffer.from(id);

@@ -3,6 +3,7 @@ import { NAME_LENGTH, TICKER_LENGTH } from "@/app/constants";
 import { AnchorContext } from "@/app/context/AnchorProvider";
 import { PayPopupProps, Socials } from "@/app/types";
 import { isValidAddress } from "@/app/web3/misc";
+import { useWallet } from "@solana/wallet-adapter-react";
 import {
   HTMLInputTypeAttribute,
   useContext,
@@ -32,6 +33,7 @@ export default function PayPopup(props: PayPopupProps) {
   const [socials, setSocials] = useState<Socials>(emptySocials);
   const [errorLabels, setErrorLabels] = useState<Socials>(emptySocials);
   const isInitialRender = useRef(true);
+  const wallet = useWallet();
 
   useEffect(() => {
     if (popupPay && isInitialRender.current) {
@@ -117,8 +119,11 @@ export default function PayPopup(props: PayPopupProps) {
   };
 
   const onPay = () => {
-    if (anchorContext) {
-      anchorContext.createMetadataAccount(socials, coloredPixelsDict);
+    if (anchorContext && wallet?.publicKey) {
+      anchorContext.createMetadataAccount(
+        { ...socials, payer: wallet?.publicKey.toString() },
+        coloredPixelsDict
+      );
     }
   };
 
@@ -132,7 +137,7 @@ export default function PayPopup(props: PayPopupProps) {
       <div>
         <label htmlFor={`${key}`}>{`${capitalize(key)}${
           type === "url" ? " URL" : ""
-        }`}</label>
+        }`}{` (optional)`}</label>
         <div>
           <input
             id={`${key}`}

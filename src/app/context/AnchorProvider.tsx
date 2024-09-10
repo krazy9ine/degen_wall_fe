@@ -13,6 +13,15 @@ export const AnchorProvider = ({ children }: { children: React.ReactNode }) => {
   const prevPubkey = useRef("");
   const { connection } = useConnection();
   const anchorInterface = useRef<AnchorInterface>(); // contract interactions
+  const anchorInterfaceListener = useRef<AnchorInterface>();
+
+  useEffect(() => {
+    if (!anchorInterfaceListener.current && connection) {
+      anchorInterfaceListener.current = new AnchorInterface(connection);
+      anchorInterfaceListener.current.registerEventListener();
+    }
+  }, [connection]);
+
   useEffect(() => {
     const currentPubkey = wallet?.publicKey?.toString();
     if (wallet && currentPubkey !== prevPubkey.current) {

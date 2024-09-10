@@ -5,7 +5,6 @@ import {
   PX_SIZE,
   PX_WIDTH,
   SERVER_URL,
-  DEFAULT_TOKEN,
 } from "@/app/constants";
 import {
   CanvasLayout,
@@ -17,6 +16,7 @@ import { isHealthyEndpoint } from "@/app/web3/misc";
 import AnchorInterface from "@/app/web3/anchorInterface";
 import { Connection } from "@solana/web3.js";
 import urlRegex from "url-regex";
+import { DEFAULT_TOKEN } from "@/app/constantsUncircular";
 
 const DEFAULLT_PAYER = "DEGenPMwjmLCw9LmdvfCUK5M4XKrbep2rts4DDqG3J5x";
 const DEFAULT_WEBSITE = "https://cacat.com";

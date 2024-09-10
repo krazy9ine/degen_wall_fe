@@ -214,9 +214,14 @@ export type BorshDeserializeParams = {
   account: AccountStruct;
 };
 
-export type TokenAddress =
-  | "So11111111111111111111111111111111111111112"
-  | "A4SvyMLMGXrHR8ahP7qotUrKvGD8KgbdAcLNs3nbVftE";
+export type TokenSymbol = "WSOL" | "GOLD";
+export type TokenName = "Wrapped SOL" | "Gold";
+export type Token = {
+  address: string;
+  name: string;
+  decimals: number;
+};
+
 export type BalanceCache = {
   timestamp: number;
   balance: number;

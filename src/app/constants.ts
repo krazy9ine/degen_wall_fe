@@ -2,8 +2,20 @@ import { Connection } from "@solana/web3.js";
 import AnchorInterface from "./web3/anchorInterface";
 
 export const WSOL_ADDRESS = "So11111111111111111111111111111111111111112";
-export const TOKEN_ADDRESS = "A4SvyMLMGXrHR8ahP7qotUrKvGD8KgbdAcLNs3nbVftE";
-export const TOKEN_ARRAY = [WSOL_ADDRESS, TOKEN_ADDRESS];
+export const GOLD_ADDRESS = "A4SvyMLMGXrHR8ahP7qotUrKvGD8KgbdAcLNs3nbVftE";
+export const TOKEN_ARRAY = [WSOL_ADDRESS, GOLD_ADDRESS];
+export const TOKEN_DICT = {
+  ["WSOL"]: {
+    decimals: 9,
+    name: "Wrapped SOL",
+    address: WSOL_ADDRESS,
+  },
+  ["GOLD"]: {
+    decimals: 9,
+    name: "Gold",
+    address: GOLD_ADDRESS,
+  },
+};
 export const FETCH_BALANCE_INTERVAL_MS = 20000;
 export const SERVER_URL = "http://localhost:3001";
 export const RPC_URL_KEY = "RPC_URL";

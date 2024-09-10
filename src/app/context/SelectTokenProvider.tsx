@@ -1,14 +1,15 @@
 "use client";
 
 import React, { useState, createContext, useEffect } from "react";
-import { TokenAddress } from "../types";
-import { WSOL_ADDRESS } from "../constants";
+import { Token, TokenSymbol } from "../types";
+import { TOKEN_DICT } from "../constants";
 
-const TOKEN_ADDRESS_KEY = "tokenAddress";
+const TOKEN_SYMBOL_KEY = "tokenSymbol";
 
 export const SelectTokenContext = createContext<{
-  tokenAddress: TokenAddress;
-  onSetTokenAddress: (newTokenAddress: TokenAddress) => void; //@ts-ignore
+  token: Token;
+  symbol: TokenSymbol;
+  onSetToken: (newSymbol: TokenSymbol) => void; //@ts-ignore
 }>(null);
 
 export const SelectTokenProvider = ({
@@ -16,23 +17,31 @@ export const SelectTokenProvider = ({
 }: {
   children: React.ReactNode;
 }) => {
-  const [tokenAddress, setTokenAddress] = useState<TokenAddress>(WSOL_ADDRESS);
+  const [token, setToken] = useState(TOKEN_DICT.WSOL);
+  const [symbol, setSymbol] = useState<TokenSymbol>("WSOL");
   useEffect(() => {
-    setTokenAddress(
-      (localStorage.getItem(TOKEN_ADDRESS_KEY) as TokenAddress) || WSOL_ADDRESS
-    );
+    const newSymbol = localStorage.getItem(TOKEN_SYMBOL_KEY) as TokenSymbol;
+    if (newSymbol) {
+      setToken(TOKEN_DICT[newSymbol]);
+      setSymbol(newSymbol);
+    } else {
+      setToken(TOKEN_DICT.WSOL);
+      setSymbol("WSOL");
+    }
   }, []);
-  const onSetTokenAddress = (newTokenAddress: TokenAddress) => {
-    if (newTokenAddress !== tokenAddress) {
-      setTokenAddress(newTokenAddress);
-      localStorage.setItem(TOKEN_ADDRESS_KEY, newTokenAddress);
+  const onSetToken = (newSymbol: TokenSymbol) => {
+    if (newSymbol !== symbol) {
+      setSymbol(newSymbol);
+      setToken(TOKEN_DICT[newSymbol]);
+      localStorage.setItem(TOKEN_SYMBOL_KEY, newSymbol);
     }
   };
   return (
     <SelectTokenContext.Provider
       value={{
-        tokenAddress,
-        onSetTokenAddress,
+        token,
+        symbol,
+        onSetToken,
       }}
     >
       {children}

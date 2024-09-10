@@ -36,7 +36,7 @@ export default function Main() {
   const [update, setUpdate] = useState(false);
   const coloredPixelsDict = useRef<ColoredPixelsDict>({});
   const changesPending = useRef(false);
-  const [socials, setSocials] = useState<Socials>();
+  const [socials, setSocials] = useState<Socials>({ payer: "", token: "" });
   const [actionStamped, setActionStamped] = useState<ActionStamped>(null);
   const undoCount = useRef(0);
   const redoCount = useRef(0);

@@ -138,81 +138,24 @@ const parseSocials = (socials: Socials) => {
   };
 };
 
-export const getUpdatedCanvas = (
-  account: MetadataAccountParsed,
-  pixelsLeft?: number
-): [CanvasLayout, number] => {
-  const {
-    payer,
-    token,
-    data,
-    website,
-    twitter,
-    community,
-    image,
-    name,
-    ticker,
-    description,
-  } = account;
-  const socialsRAW = {
-    payer,
-    token,
-    website,
-    twitter,
-    community,
-    image,
-    name,
-    ticker,
-    description,
-  };
-  if (data.length !== MAX_DATA_SIZE)
-    throw Error(`Invalid data size for ${socialsRAW}`);
-  const socials = parseSocials(socialsRAW);
-  for (let i = 0; i < MAX_DATA_SIZE; i += PX_SIZE) {
-    const x = data[i];
-    const y = data[i + 1];
-    const R = data[i + 2];
-    const G = data[i + 3];
-    const B = data[i + 4];
-    if (x === DATA_DELIMITER) break;
-    if (x >= PX_WIDTH || x < 0) throw new Error(`Invalid x ${x} at index ${i}`);
-    if (y >= PX_HEIGHT || y < 0) {
-      throw new Error(`Invalid y ${y} at index ${i}`);
-    }
-    if (R < 0 || R > 255) throw new Error(`Invalid R ${R} at index ${i}`);
-    if (G < 0 || G > 255) throw new Error(`Invalid G ${G} at index ${i}`);
-    if (B < 0 || B > 255) throw new Error(`Invalid B ${B} at index ${i}`);
-    const index = x + y * PX_WIDTH;
-    if (pixelsLeft && canvas[index].socials.token === DEFAULT_TOKEN)
-      pixelsLeft--;
-    canvas[index] = {
-      color: R.toString(16) + G.toString(16) + B.toString(16),
-      socials,
-    };
-    if (pixelsLeft && pixelsLeft <= 0) break;
-  }
-  return pixelsLeft ? [canvas, pixelsLeft] : [canvas, 0];
-};
-
 const fetchLatestCanvas = async () => {
-  try {
-    const response = await fetch(SERVER_URL);
-    if (!response.ok) {
-      throw new Error(`HTTP error! Status: ${response.status}`);
-    }
-    const canvas = (await response.json()) as CanvasLayout;
-    return canvas;
-  } catch (error) {
-    console.error("Error fetching canvas data:", error);
-    return getDefaultCanvas(); // Handle error as appropriate
+  const response = await fetch(SERVER_URL);
+  if (!response.ok) {
+    throw new Error(`HTTP error! Status: ${response.status}`);
   }
+  const canvas = (await response.json()) as CanvasLayout;
+  return canvas;
 };
 
-const updateCanvas = (
-  canvas: CanvasLayout,
+export const getUpdatedCanvas = (
+  oldCanvas: CanvasLayout,
   account: MetadataAccountParsed,
   pixelsLeft?: number
-) => {
+): number | CanvasLayout => {
+  let canvas;
+  if (pixelsLeft)
+    canvas = oldCanvas; // think of pixelsLeft as a isMutatingInPlace bool
+  else canvas = JSON.parse(JSON.stringify(oldCanvas)); // look at return values to get a better picture
   const { payer, token, data, website, twitter, community, image } = account;
   const socialsRAW = {
     payer,
@@ -248,7 +191,7 @@ const updateCanvas = (
     };
     if (pixelsLeft && pixelsLeft <= 0) break;
   }
-  return pixelsLeft ? pixelsLeft : 0;
+  return pixelsLeft ? pixelsLeft : canvas;
 };
 
 const getLatestCanvas = async (endpoint: string) => {
@@ -259,10 +202,10 @@ const getLatestCanvas = async (endpoint: string) => {
   if (accounts) {
     for (const account of accounts) {
       try {
-        pixelsLeft = updateCanvas(canvas, account, pixelsLeft);
+        pixelsLeft = getUpdatedCanvas(canvas, account, pixelsLeft) as number;
         if (pixelsLeft <= 0) break;
       } catch (error) {
-        console.error(`Error for account ${JSON.stringify(account)}: ${error}`);
+        console.warn(`Error for account ${JSON.stringify(account)}: ${error}`);
       }
     }
   }
@@ -277,7 +220,9 @@ export const getEmptyCanvas = () => {
   }));
 };
 
-export const initAndGetCanvas = async (endpoint?: string) => {
+export const initAndGetCanvas = async (
+  endpoint?: string
+): Promise<CanvasLayout | null> => {
   try {
     if (endpoint && (await isHealthyEndpoint(endpoint))) {
       return await getLatestCanvas(endpoint);
@@ -286,6 +231,6 @@ export const initAndGetCanvas = async (endpoint?: string) => {
     return canvas;
   } catch (error) {
     console.error(`Error retrieving canvas: ${error}`);
-    return getDefaultCanvas();
+    return null;
   }
 };

@@ -7,7 +7,12 @@ import { PX_HEIGHT, PX_WIDTH } from "@/app/constants";
 export default function CanvasReadonly(
   props: CanvasReadonlyProps & { onSetSocials: (socials: Socials) => void }
 ) {
-  const { squareSize, isEditMode, canvasReadonly: canvasLayout, onSetSocials } = props;
+  const {
+    squareSize,
+    isEditMode,
+    canvasReadonly: canvasLayout,
+    onSetSocials,
+  } = props;
   return (
     <div
       id="canvas-view"

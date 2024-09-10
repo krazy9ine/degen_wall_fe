@@ -9,15 +9,23 @@ import {
   Socials,
 } from "@/app/types";
 import { CanvasReadonly, CanvasEdit } from "./canvas-components";
-import { memo, useContext, useEffect, useRef, useState } from "react";
+import {
+  memo,
+  useCallback,
+  useContext,
+  useEffect,
+  useRef,
+  useState,
+} from "react";
 import {
   getDefaultCanvas,
   getUpdatedCanvas,
   initAndGetCanvas,
 } from "./canvas-components/canvas-util";
 import { PX_HEIGHT, PX_WIDTH, RPC_URL_KEY } from "@/app/constants";
-import { EventListenerContext } from "@/app/context/EventListenerProvider";
 import useWindowDimensions from "@/app/hooks/useWindowDimensions";
+import { AnchorContext } from "@/app/context/AnchorProvider";
+import { useConnection } from "@solana/wallet-adapter-react";
 
 const CANVAS_DISPLAY_RATIO = 0.8;
 const SQUARE_MIN_SIZE = 8;
@@ -32,8 +40,8 @@ export default function CanvasWrapper(
     getDefaultCanvas()
   );
   const isInitialRender = useRef(true);
-  const setEventHandler = useContext(EventListenerContext);
-
+  const anchorInterface = useContext(AnchorContext);
+  const { connection } = useConnection();
   const { height, width } = useWindowDimensions();
 
   const squareSize = Math.max(
@@ -50,24 +58,35 @@ export default function CanvasWrapper(
     canvasReadonly,
   };
 
-  useEffect(() => {
-    const updateCanvas = (event: MetadataAccountParsed) => {
-      const [newCanvas] = getUpdatedCanvas(event);
+  const updateCanvas = useCallback(
+    (event: MetadataAccountParsed) => {
+      const newCanvas = getUpdatedCanvas(canvasReadonly, event) as CanvasLayout;
       setCanvasReadonly([...newCanvas]);
-    };
+    },
+    [canvasReadonly]
+  );
 
+  useEffect(() => {
+    if (anchorInterface) anchorInterface.registerEventListener(updateCanvas);
+    return () => {
+      if (anchorInterface) anchorInterface.unregisterEventListener();
+    };
+  }, [anchorInterface, updateCanvas]);
+
+  useEffect(() => {
     const onInitAndGetCanvas = async () => {
       const endpoint = localStorage.getItem(RPC_URL_KEY) || "";
       const initialCanvas = await initAndGetCanvas(endpoint);
-      setCanvasReadonly(initialCanvas);
+      if (initialCanvas) {
+        setCanvasReadonly(initialCanvas);
+        isInitialRender.current = false;
+      } else console.warn("Please use a valid RPC url for now");
     };
 
     if (isInitialRender.current) {
-      isInitialRender.current = false;
-      setEventHandler(updateCanvas);
       onInitAndGetCanvas();
     }
-  }, [canvasReadonly, setEventHandler]);
+  }, [canvasReadonly, connection]);
   return (
     <div id="canvas wrapper" className="flex">
       <CanvasReadonly

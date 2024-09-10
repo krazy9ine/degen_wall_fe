@@ -33,7 +33,7 @@ export default function SocialsSection(
         {name} ${ticker}
       </p>
       <div style={{ display: image ? "block" : "none" }}>
-        <img src={image} alt="image"></img>
+        <img src={image} alt="image" className="max-w-32"></img>
       </div>
       <p style={{ display: description ? "block" : "none" }}>{description}</p>
       <p style={{ display: website ? "block" : "none" }}>Website: {website}</p>

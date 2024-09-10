@@ -178,7 +178,7 @@ export default function Main() {
   };
 
   return (
-    <main>
+    <main className="flex">
       <div id="menu-canvas-wrapper" className="inline-block">
         <MenuSection {...menuSectionProps}></MenuSection>
         <CanvasWrapper

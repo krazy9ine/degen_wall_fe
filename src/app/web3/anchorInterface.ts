@@ -79,17 +79,14 @@ export default class AnchorInterface {
     this.listener = this.program.addEventListener(
       EVENT_NAME,
       (eventRAW, _slot) => {
-        console.log("in event");
         const event = this.getParsedEvent(eventRAW);
         eventEmitter.emit(EVENT_NAME, event);
       }
     );
-    console.log(`registering event listener with id ${this.listener}`);
   }
 
   unregisterEventListener() {
     try {
-      console.log(`unregistering event listener with id ${this.listener}`);
       this.program.removeEventListener(this.listener);
     } catch (error) {
       console.error(

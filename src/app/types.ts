@@ -36,6 +36,9 @@ interface SquareProps {
 
 export interface SquareReadonlyProps extends SquareProps {
   onSetSocials: (socials: Socials) => void;
+  handleClick: (index: number) => void;
+  focusIndex: number | undefined;
+  index: number;
 }
 
 export enum Action {

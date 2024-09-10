@@ -3,6 +3,7 @@
 import { CanvasReadonlyProps, Socials } from "@/app/types";
 import SquareReadonly from "./squareReadonly";
 import { PX_HEIGHT, PX_WIDTH } from "@/app/constants";
+import { useState } from "react";
 
 export default function CanvasReadonly(
   props: CanvasReadonlyProps & { onSetSocials: (socials: Socials) => void }
@@ -13,6 +14,11 @@ export default function CanvasReadonly(
     canvasReadonly: canvasLayout,
     onSetSocials,
   } = props;
+  const [focusIndex, setFocusIndex] = useState<number>();
+  const handleClick = (index: number) => {
+    if (focusIndex) setFocusIndex(undefined);
+    else setFocusIndex(index);
+  };
   return (
     <div
       id="canvas-view"
@@ -36,6 +42,9 @@ export default function CanvasReadonly(
                   size={squareSize}
                   metadataItem={pixel}
                   onSetSocials={onSetSocials}
+                  handleClick={handleClick}
+                  focusIndex={focusIndex}
+                  index={index}
                 />
               );
             })}

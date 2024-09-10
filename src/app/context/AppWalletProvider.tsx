@@ -6,6 +6,7 @@ import {
   WalletProvider,
 } from "@solana/wallet-adapter-react";
 import { WalletModalProvider } from "@solana/wallet-adapter-react-ui";
+import { WalletChangeProvider } from "./WalletChangeProvider";
 // import { UnsafeBurnerWalletAdapter } from "@solana/wallet-adapter-wallets";
 
 // Default styles that can be overridden by your app
@@ -31,7 +32,9 @@ export default function AppWalletProvider({
   return (
     <ConnectionProvider endpoint={endpoint}>
       <WalletProvider wallets={wallets} autoConnect>
-        <WalletModalProvider>{children}</WalletModalProvider>
+        <WalletModalProvider>
+          <WalletChangeProvider>{children}</WalletChangeProvider>
+        </WalletModalProvider>
       </WalletProvider>
     </ConnectionProvider>
   );

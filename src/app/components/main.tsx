@@ -174,6 +174,7 @@ export default function Main() {
     popupPay,
     onClosePopupPay,
     coloredPixelsDict: coloredPixelsDict.current,
+    exitEditMode,
   };
 
   return (

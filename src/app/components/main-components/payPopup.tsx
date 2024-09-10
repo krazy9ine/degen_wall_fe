@@ -1,5 +1,5 @@
 import { BackdropCommon, ConnectWalletButton } from "@/app/common";
-import { NAME_LENGTH, TICKER_LENGTH } from "@/app/constants";
+import { NAME_LENGTH, TICKER_LENGTH, USER_REGEX } from "@/app/constants";
 import { AnchorContext } from "@/app/context/AnchorProvider";
 import { PayPopupProps, Socials } from "@/app/types";
 import { isValidAddress } from "@/app/web3/misc";
@@ -12,9 +12,26 @@ import {
   useState,
 } from "react";
 import urlRegex from "url-regex";
+import { getDefaultSocials } from "./canvas-components/canvas-util";
+
+const TWITTER_REGEX = /(?:twitter\.com\/|x\.com\/)([A-Za-z0-9_]+)(?:[/?]|$)/;
+const INVALID_URL_ERROR = "Invalid URL";
+
+const extractTwitterUser = (url: string) => {
+  const match = url.match(TWITTER_REGEX);
+  return match ? match[1] : null;
+};
 
 const capitalize = (str: string) => str.charAt(0).toUpperCase() + str.slice(1);
-const emptySocials: Socials = {
+
+const isValidUrl = (urlString: string) => {
+  return urlRegex({ strict: false, exact: true }).test("https://" + urlString);
+};
+
+const parseUrl = (urlString: string) => {
+  return urlString.replace(/^https?:\/\//, "");
+};
+const EMPTY_SOCIALS: Socials = {
   payer: "",
   name: "",
   ticker: "",
@@ -26,28 +43,26 @@ const emptySocials: Socials = {
   image: "",
 };
 
+const DEFAULT_SOCIALS = getDefaultSocials();
+
 export default function PayPopup(props: PayPopupProps) {
-  const { popupPay, onClosePopupPay, coloredPixelsDict } = props;
+  const { popupPay, onClosePopupPay, coloredPixelsDict, exitEditMode } = props;
   const menuRef = useRef<HTMLDivElement>(null);
   const anchorContext = useContext(AnchorContext);
-  const [socials, setSocials] = useState<Socials>(emptySocials);
-  const [errorLabels, setErrorLabels] = useState<Socials>(emptySocials);
+  const [socials, setSocials] = useState<Socials>(EMPTY_SOCIALS);
+  const [errorLabels, setErrorLabels] = useState<Socials>(EMPTY_SOCIALS);
   const isInitialRender = useRef(true);
   const wallet = useWallet();
 
   useEffect(() => {
     if (popupPay && isInitialRender.current) {
       isInitialRender.current = false;
-      setSocials(emptySocials);
-      setErrorLabels(emptySocials);
+      setSocials(EMPTY_SOCIALS);
+      setErrorLabels(EMPTY_SOCIALS);
     } else if (!popupPay) {
       isInitialRender.current = true;
     }
   }, [popupPay]);
-
-  const isValidUrl = (urlString: string) => {
-    return urlRegex({ strict: false, exact: true }).test(urlString);
-  };
 
   const validateName = (name: string) => {
     if (name.length > NAME_LENGTH) {
@@ -65,65 +80,92 @@ export default function PayPopup(props: PayPopupProps) {
     }
   };
 
-  const validateWebsite = (website: string) => {
-    if (!isValidUrl(website)) console.warn("Invalid url for website");
-    setSocials((prevSocials) => ({ ...prevSocials, website }));
-    setErrorLabels((prevErrorLabels) => ({
-      ...prevErrorLabels,
-      website: "Placeholder error",
-    }));
-  };
-
-  const validateTwitter = (twitter: string) => {
-    if (!isValidUrl(twitter)) console.warn("Invalid url for twitter");
-    setSocials((prevSocials) => ({ ...prevSocials, twitter }));
-    setErrorLabels((prevErrorLabels) => ({
-      ...prevErrorLabels,
-      twitter: "Placeholder error",
-    }));
-  };
-
-  const validateCommunity = (community: string) => {
-    if (!isValidUrl(community)) console.warn("Invalid url for community");
-    setSocials((prevSocials) => ({ ...prevSocials, community }));
-    setErrorLabels((prevErrorLabels) => ({
-      ...prevErrorLabels,
-      community: "Placeholder error",
-    }));
-  };
-
-  const validateImage = (image: string) => {
-    if (!isValidUrl(image)) console.warn("Invalid url for image");
-    setSocials((prevSocials) => ({ ...prevSocials, image }));
-    setErrorLabels((prevErrorLabels) => ({
-      ...prevErrorLabels,
-      image: "Placeholder error",
-    }));
-  };
-
   const validateToken = (token: string) => {
-    if (!isValidAddress(token)) console.warn("Invalid tokenAddress");
+    let errorLabel = "";
+    if (token) {
+      if (!isValidAddress(token)) errorLabel = "Invalid address";
+    }
     setSocials((prevSocials) => ({ ...prevSocials, token }));
     setErrorLabels((prevErrorLabels) => ({
       ...prevErrorLabels,
-      token: "Placeholder error",
+      token: errorLabel,
     }));
   };
 
   const validateDescription = (description: string) => {
     setSocials((prevSocials) => ({ ...prevSocials, description }));
+  };
+
+  const validateWebsite = (websiteHttps: string) => {
+    let website = "";
+    let errorLabel = "";
+    if (websiteHttps) {
+      website = parseUrl(websiteHttps);
+      if (!isValidUrl(website)) errorLabel = INVALID_URL_ERROR;
+    }
+    setSocials((prevSocials) => ({ ...prevSocials, website }));
     setErrorLabels((prevErrorLabels) => ({
       ...prevErrorLabels,
-      description: "Placeholder error",
+      website: errorLabel,
     }));
   };
 
-  const onPay = () => {
+  const validateTwitter = (twitterHttps: string) => {
+    let twitter = "";
+    let errorLabel = "";
+    if (twitterHttps) {
+      twitter = parseUrl(twitterHttps);
+      if (!isValidUrl(twitter)) errorLabel = INVALID_URL_ERROR;
+      else {
+        const twitterUser = extractTwitterUser(twitter);
+        if (!(twitterUser && USER_REGEX.test(twitterUser)))
+          errorLabel = "Invalid user";
+      }
+    }
+    setSocials((prevSocials) => ({ ...prevSocials, twitter }));
+    setErrorLabels((prevErrorLabels) => ({
+      ...prevErrorLabels,
+      twitter: errorLabel,
+    }));
+  };
+
+  const validateCommunity = (communityHttps: string) => {
+    let community = "";
+    let errorLabel = "";
+    if (communityHttps) {
+      community = parseUrl(communityHttps);
+      if (!isValidUrl(community)) errorLabel = INVALID_URL_ERROR;
+    }
+    setSocials((prevSocials) => ({ ...prevSocials, community }));
+    setErrorLabels((prevErrorLabels) => ({
+      ...prevErrorLabels,
+      community: errorLabel,
+    }));
+  };
+
+  const validateImage = (imageHttps: string) => {
+    let image = "";
+    let errorLabel = "";
+    if (imageHttps) {
+      image = parseUrl(imageHttps);
+      if (!isValidUrl(image)) errorLabel = INVALID_URL_ERROR;
+    }
+    setSocials((prevSocials) => ({ ...prevSocials, image }));
+    setErrorLabels((prevErrorLabels) => ({
+      ...prevErrorLabels,
+      image: errorLabel,
+    }));
+  };
+
+  const onPay = async () => {
+    console.log(anchorContext, wallet?.publicKey);
     if (anchorContext && wallet?.publicKey) {
-      anchorContext.createMetadataAccount(
+      await anchorContext.createMetadataAccount(
         { ...socials, payer: wallet?.publicKey.toString() },
         coloredPixelsDict
       );
+      exitEditMode();
+      onClosePopupPay();
     }
   };
 
@@ -135,14 +177,25 @@ export default function PayPopup(props: PayPopupProps) {
     const { id: key, type, validate } = props;
     return (
       <div>
-        <label htmlFor={`${key}`}>{`${capitalize(key)}${
-          type === "url" ? " URL" : ""
-        }`}{` (optional)`}</label>
+        <label htmlFor={`${key}`}>
+          {`${capitalize(key)}${type === "url" ? " URL" : ""}`}
+          {` (optional)`}
+        </label>
         <div>
+          {type === "url" && (
+            <label htmlFor={`${key}`} className="bg-slate-500">
+              https://
+            </label>
+          )}{" "}
           <input
             id={`${key}`}
             type={type}
             spellCheck="false"
+            placeholder={
+              type === "url"
+                ? `${DEFAULT_SOCIALS[key]?.replace("https://", "")}`
+                : `${DEFAULT_SOCIALS[key]}`
+            }
             value={socials[key] || ""}
             onChange={(event) => validate(event.target.value)}
           ></input>

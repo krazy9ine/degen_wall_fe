@@ -1,6 +1,6 @@
 "use client";
 
-import { createContext, useEffect, useRef } from "react";
+import { createContext, useEffect, useRef, useState } from "react";
 import AnchorInterface from "../web3/anchorInterface";
 import { useAnchorWallet, useConnection } from "@solana/wallet-adapter-react";
 
@@ -12,30 +12,34 @@ export const AnchorProvider = ({ children }: { children: React.ReactNode }) => {
   const wallet = useAnchorWallet();
   const prevPubkey = useRef("");
   const { connection } = useConnection();
-  const anchorInterface = useRef<AnchorInterface>(); // contract interactions
-  const anchorInterfaceListener = useRef<AnchorInterface>();
-
+  const [anchorInterface, setAnchorInterface] = useState<AnchorInterface>(); // contract interactions
+  const [anchorInterfaceListener, setAnchorInterfaceListener] =
+    useState<AnchorInterface>();
+  const isEventRegistered = useRef(false);
   useEffect(() => {
-    if (!anchorInterfaceListener.current && connection) {
-      anchorInterfaceListener.current = new AnchorInterface(connection);
-      anchorInterfaceListener.current.registerEventListener();
+    if (anchorInterfaceListener && !isEventRegistered.current) {
+      anchorInterfaceListener.registerEventListener();
+      isEventRegistered.current = true;
     }
-  }, [connection]);
+    if (!anchorInterfaceListener && connection) {
+      setAnchorInterfaceListener(new AnchorInterface(connection));
+    }
+  }, [connection, anchorInterfaceListener]);
 
   useEffect(() => {
     const currentPubkey = wallet?.publicKey?.toString();
     if (wallet && currentPubkey !== prevPubkey.current) {
       prevPubkey.current = currentPubkey as string;
-      if (!anchorInterface.current)
-        anchorInterface.current = new AnchorInterface(connection, wallet);
-      else anchorInterface.current.updateProgram(connection, wallet);
+      if (!anchorInterface)
+        setAnchorInterface(new AnchorInterface(connection, wallet));
+      else anchorInterface.updateProgram(connection, wallet);
     } else if (!wallet) {
       prevPubkey.current = "";
     }
-  }, [wallet, connection]);
+  }, [wallet, connection, anchorInterface]);
 
   return (
-    <AnchorContext.Provider value={anchorInterface.current}>
+    <AnchorContext.Provider value={anchorInterface}>
       {children}
     </AnchorContext.Provider>
   );

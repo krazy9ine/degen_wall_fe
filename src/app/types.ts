@@ -72,6 +72,7 @@ export interface PayPopupProps {
   popupPay: boolean;
   onClosePopupPay: () => void;
   coloredPixelsDict: ColoredPixelsDict;
+  exitEditMode: () => void;
 }
 
 export type ColoredPixelsDict = {

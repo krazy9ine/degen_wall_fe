@@ -24,13 +24,11 @@ export default function RootLayout({
       <body className={inter.className}>
         {
           <RPCProvider>
-              <WalletChangeProvider>
                 <AnchorProvider>
                   <SelectTokenProvider>
                     <TokenBalanceProvider>{children}</TokenBalanceProvider>
                   </SelectTokenProvider>
                 </AnchorProvider>
-              </WalletChangeProvider>
           </RPCProvider>
         }
       </body>

@@ -5,6 +5,7 @@ import {
   PX_SIZE,
   PX_WIDTH,
   SERVER_URL,
+  USER_REGEX,
 } from "@/app/constants";
 import {
   CanvasLayout,
@@ -19,17 +20,16 @@ import urlRegex from "url-regex";
 import { DEFAULT_TOKEN } from "@/app/constantsUncircular";
 
 const DEFAULLT_PAYER = "DEGenPMwjmLCw9LmdvfCUK5M4XKrbep2rts4DDqG3J5x";
-const DEFAULT_WEBSITE = "https://cacat.com";
-const DEFAULT_TWITTER = "https://x.com";
-const DEFAULT_COMMUNITY = "https://t.me";
-const DEFAULT_IMAGE = "https://imgur.com";
-const DEFAULT_NAME = "cacat";
-const DEFAULT_TICKER = "CACAT";
-const DEFAULT_DESCRIPTION = "BLABLABLA";
+const DEFAULT_WEBSITE = "https://degen_wall.com";
+const DEFAULT_TWITTER = "https://x.com/degen_wall";
+const DEFAULT_COMMUNITY = "https://t.me/degen_wall";
+const DEFAULT_IMAGE = "https://img.freepik.com/free-vector/bird-colorful-logo-gradient-vector_343694-1365.jpg";
+const DEFAULT_NAME = "Degen Wall";
+const DEFAULT_TICKER = "DEV";
+const DEFAULT_DESCRIPTION = "Put your pixels on display Nigga";
 const DEFAULT_COLOR = "1b1d28";
 const URL_PREFIX = "https://";
 
-const TWITTER_REGEX = /^[a-zA-Z0-9_]{1,15}$/;
 const IMAGE_REGEX = /\.(jpg|jpeg|png|gif|bmp|webp)$/i;
 
 let canvas: CanvasLayout = [];
@@ -55,7 +55,7 @@ export const invertColor = (color: string) => {
   return invertedColor;
 };
 
-const getDefaultSocials = (): Socials => {
+export const getDefaultSocials = (): Socials => {
   return {
     payer: DEFAULLT_PAYER,
     token: DEFAULT_TOKEN,
@@ -98,7 +98,7 @@ const parseUrl = (urlString: string, name: string) => {
 };
 
 const parseTwitter = (twitter: string) => {
-  if (TWITTER_REGEX.test(twitter)) return "https://x.com/" + twitter;
+  if (USER_REGEX.test(twitter)) return "https://x.com/" + twitter;
   console.warn(`Invalid twitter ${twitter}`);
   return "";
 };

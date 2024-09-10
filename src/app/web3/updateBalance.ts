@@ -16,7 +16,6 @@ export const updateBalance = async (
   onSetBalance: (balance: number) => void
 ) => {
   try {
-    onSetBalance(0);
     const currentWalletAddress = owner.toString();
     const { address: mint, decimals } = token;
     const balanceCacheString = localStorage.getItem(mint);

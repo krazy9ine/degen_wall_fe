@@ -1,5 +1,5 @@
 import { FETCH_BALANCE_INTERVAL_MS, WSOL_ADDRESS } from "../constants";
-import { BalanceCache, TokenAddress } from "../types";
+import { BalanceCache, Token } from "../types";
 import { PublicKey, Connection } from "@solana/web3.js";
 
 const TOKEN_PROGRAM_ID = new PublicKey(
@@ -11,12 +11,13 @@ const ASSOCIATED_TOKEN_PROGRAM_ID = new PublicKey(
 
 export const updateBalance = async (
   owner: PublicKey,
-  mint: TokenAddress,
+  token: Token,
   connection: Connection,
   onSetBalance: (balance: number) => void
 ) => {
   try {
     const currentWalletAddress = owner.toString();
+    const { address: mint, decimals } = token;
     const balanceCacheString = localStorage.getItem(mint);
     if (balanceCacheString) {
       const { timestamp, balance, walletAddress } = JSON.parse(
@@ -33,7 +34,9 @@ export const updateBalance = async (
       }
     }
     if (mint === WSOL_ADDRESS) {
-      const newBalance = await connection.getBalance(owner);
+      const newBalance = Number(
+        ((await connection.getBalance(owner)) / decimals).toFixed(3)
+      );
       updateCache(mint, newBalance, currentWalletAddress);
       onSetBalance(newBalance);
     } else {
@@ -53,11 +56,7 @@ export const updateBalance = async (
   }
 };
 
-const updateCache = (
-  mint: TokenAddress,
-  balance: number,
-  walletAddress: string
-) => {
+const updateCache = (mint: string, balance: number, walletAddress: string) => {
   const newBalanceCache: BalanceCache = {
     timestamp: Date.now(),
     balance,

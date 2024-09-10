@@ -25,11 +25,11 @@ export const TokenBalanceProvider = ({
 
   useEffect(() => {
     if (!wallet.connected) onSetBalance(0);
-    else if (selectTokenContext?.tokenAddress) {
+    else if (selectTokenContext?.token) {
       if (wallet.publicKey)
         updateBalance(
           wallet.publicKey,
-          selectTokenContext.tokenAddress,
+          selectTokenContext?.token,
           connectionContext.connection,
           onSetBalance
         );
@@ -39,14 +39,14 @@ export const TokenBalanceProvider = ({
     wallet.connected,
     wallet.publicKey,
     connectionContext.connection,
-    selectTokenContext.tokenAddress,
+    selectTokenContext,
   ]);
 
   useInterval(async () => {
-    if (selectTokenContext?.tokenAddress && wallet.publicKey)
+    if (selectTokenContext?.token && wallet.publicKey)
       updateBalance(
         wallet.publicKey,
-        selectTokenContext.tokenAddress,
+        selectTokenContext.token,
         connectionContext.connection,
         onSetBalance
       );

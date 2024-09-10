@@ -23,9 +23,6 @@ import eventEmitter from "../hooks/eventEmitter";
 import { DEFAULT_TOKEN, EVENT_NAME } from "../constantsUncircular";
 
 const STRING_OFFSET = 4;
-const AUTHORITY_BUFFER = new PublicKey(
-  "H3v4uZwVuoCHDyTFezH196wUHxmm7NfBH2yxzUB6MpDZ"
-).toBuffer();
 const TREASURY_PUBLICKEY = new PublicKey(
   "AWJQAWxPE3hJz2XVrJDmBDdQk4pC2SjeKpLFhjUncCKM"
 );
@@ -124,7 +121,7 @@ export default class AnchorInterface {
     const ID_SEED = Buffer.from(id);
     const PAYER_SEED = payer_publickey.toBuffer();
     const [sol_treasury_account] = web3.PublicKey.findProgramAddressSync(
-      [this.SEED_PREFIX, AUTHORITY_BUFFER],
+      [this.SEED_PREFIX],
       this.program.programId
     );
     const [metadata_account] = web3.PublicKey.findProgramAddressSync(

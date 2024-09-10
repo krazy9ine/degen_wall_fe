@@ -83,10 +83,6 @@ export type DegenWall = {
                   108,
                   108
                 ]
-              },
-              {
-                "kind": "account",
-                "path": "authority"
               }
             ]
           }
@@ -336,10 +332,6 @@ export type DegenWall = {
                   108,
                   108
                 ]
-              },
-              {
-                "kind": "account",
-                "path": "authority"
               }
             ]
           }
@@ -509,10 +501,6 @@ export type DegenWall = {
                   108,
                   108
                 ]
-              },
-              {
-                "kind": "account",
-                "path": "authority"
               }
             ]
           }
@@ -617,10 +605,6 @@ export type DegenWall = {
                   108,
                   108
                 ]
-              },
-              {
-                "kind": "account",
-                "path": "authority"
               }
             ]
           }

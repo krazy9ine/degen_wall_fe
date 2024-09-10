@@ -77,10 +77,6 @@
                   108,
                   108
                 ]
-              },
-              {
-                "kind": "account",
-                "path": "authority"
               }
             ]
           }
@@ -330,10 +326,6 @@
                   108,
                   108
                 ]
-              },
-              {
-                "kind": "account",
-                "path": "authority"
               }
             ]
           }
@@ -503,10 +495,6 @@
                   108,
                   108
                 ]
-              },
-              {
-                "kind": "account",
-                "path": "authority"
               }
             ]
           }
@@ -611,10 +599,6 @@
                   108,
                   108
                 ]
-              },
-              {
-                "kind": "account",
-                "path": "authority"
               }
             ]
           }

@@ -1,4 +1,4 @@
-import { Connection } from "@solana/web3.js";
+import { Connection, PublicKey } from "@solana/web3.js";
 import AnchorInterface from "./web3/anchorInterface";
 
 export const WSOL_ADDRESS = "So11111111111111111111111111111111111111112";
@@ -9,11 +9,19 @@ export const TOKEN_DICT = {
     decimals: 9,
     name: "Wrapped SOL",
     address: WSOL_ADDRESS,
+    vault_wsol: new PublicKey(WSOL_ADDRESS),
+    vault_mint: new PublicKey(WSOL_ADDRESS),
+    treasury_mint: new PublicKey(WSOL_ADDRESS),
   },
   ["GOLD"]: {
     decimals: 9,
     name: "Gold",
     address: GOLD_ADDRESS,
+    vault_wsol: new PublicKey("58DmxrkK8KTJkDhcG4oDVQ7Li7yfbpNikhtsiLD53KTD"),
+    vault_mint: new PublicKey("6jBwx67VgAFPBTrGKnTmE2SVKzXgWJ2sAP25ks2YZUE1"),
+    treasury_mint: new PublicKey(
+      "CeqkbDdECYJZ86K4qJndBxNQD85tFj498XYY5UyxPuQp"
+    ),
   },
 };
 export const FETCH_BALANCE_INTERVAL_MS = 20000;

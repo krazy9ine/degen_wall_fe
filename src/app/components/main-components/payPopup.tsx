@@ -25,6 +25,7 @@ import urlRegex from "url-regex";
 import { getDefaultSocials } from "./canvas-components/canvas-util";
 import { Toast } from "primereact/toast";
 import { CircularProgress } from "@mui/material";
+import { SelectTokenContext } from "@/app/context/SelectTokenProvider";
 
 const TWITTER_REGEX = /(?:twitter\.com\/|x\.com\/)([A-Za-z0-9_]+)(?:[/?]|$)/;
 const INVALID_URL_ERROR = "Invalid URL";
@@ -78,6 +79,7 @@ export default function PayPopup(props: PayPopupProps) {
   const socialsSize = calculateUtf8StringSize(socials);
   const toast = useRef<Toast>(null);
   const [isLoading, setIsLoading] = useState(false);
+  const selectTokenContext = useContext(SelectTokenContext);
 
   useEffect(() => {
     if (popupPay && isInitialRender.current) {
@@ -196,7 +198,8 @@ export default function PayPopup(props: PayPopupProps) {
       try {
         await anchorContext.createMetadataAccount(
           { ...socials, payer: wallet?.publicKey.toString() },
-          coloredPixelsDict
+          coloredPixelsDict,
+          selectTokenContext.token
         );
         toast?.current?.show({
           severity: "success",
@@ -207,6 +210,7 @@ export default function PayPopup(props: PayPopupProps) {
         exitEditMode();
         onClosePopupPay();
       } catch (error) {
+        console.error(error);
         toast?.current?.show({
           severity: "error",
           summary: "Error!",

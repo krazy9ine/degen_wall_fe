@@ -11,6 +11,7 @@ import {
   MetadataAccountParsed,
   Socials,
   StringType,
+  Token,
   validateString,
 } from "../types";
 import * as borsh from "@coral-xyz/borsh";
@@ -21,10 +22,15 @@ import IDL from "./idl.json";
 import { AnchorWallet } from "@solana/wallet-adapter-react";
 import eventEmitter from "../hooks/eventEmitter";
 import { DEFAULT_TOKEN, EVENT_NAME } from "../constantsUncircular";
+import { WSOL_ADDRESS } from "../constants";
+import { TOKEN_PROGRAM_ID } from "@coral-xyz/anchor/dist/cjs/utils/token";
 
 const STRING_OFFSET = 4;
 const TREASURY_PUBLICKEY = new PublicKey(
   "AWJQAWxPE3hJz2XVrJDmBDdQk4pC2SjeKpLFhjUncCKM"
+);
+const SPL_ASSOCIATED_TOKEN_ACCOUNT_PROGRAM_ID: PublicKey = new PublicKey(
+  "ATokenGPvbdGVxr1b2hvZbsiqW5xWH25efTNsLJA8knL"
 );
 
 export default class AnchorInterface {
@@ -103,7 +109,11 @@ export default class AnchorInterface {
       .sort((a, b) => b.timestamp - a.timestamp);
   }
 
-  async createMetadataAccount(socials: Socials, dataRAW: ColoredPixelsDict) {
+  async createMetadataAccount(
+    socials: Socials,
+    dataRAW: ColoredPixelsDict,
+    paymentToken: Token
+  ) {
     const {
       token,
       website,
@@ -120,36 +130,76 @@ export default class AnchorInterface {
     const id = Array.from(Keypair.generate().publicKey.toBytes());
     const ID_SEED = Buffer.from(id);
     const PAYER_SEED = payer_publickey.toBuffer();
-    const [sol_treasury_account] = web3.PublicKey.findProgramAddressSync(
-      [this.SEED_PREFIX],
-      this.program.programId
-    );
     const [metadata_account] = web3.PublicKey.findProgramAddressSync(
       [this.SEED_PREFIX, PAYER_SEED, ID_SEED],
       this.program.programId
     );
     const data = this.formatData(dataRAW);
-    await this.program.methods
-      .createMetadataAccount({
-        id,
-        token,
-        data,
-        website,
-        twitter,
-        community,
-        image,
-        name,
-        ticker,
-        description,
-      })
-      .accounts({
-        authority: payer_publickey, //@ts-ignore
-        metadataAccount: metadata_account,
-        solTreasuryAccount: sol_treasury_account,
-        treasury: TREASURY_PUBLICKEY,
-        token: token_publickey,
-      })
-      .rpc();
+    if (paymentToken.address === WSOL_ADDRESS) {
+      const [sol_treasury_account] = web3.PublicKey.findProgramAddressSync(
+        [this.SEED_PREFIX],
+        this.program.programId
+      );
+      await this.program.methods
+        .createMetadataAccount({
+          id,
+          token,
+          data,
+          website,
+          twitter,
+          community,
+          image,
+          name,
+          ticker,
+          description,
+        })
+        .accounts({
+          authority: payer_publickey, //@ts-ignore
+          metadataAccount: metadata_account,
+          solTreasuryAccount: sol_treasury_account,
+          treasury: TREASURY_PUBLICKEY,
+          token: token_publickey,
+        })
+        .rpc();
+    } else {
+      const { vault_wsol, vault_mint, treasury_mint, address } = paymentToken;
+      const mint = new PublicKey(address);
+      const MINT_SEED = mint.toBuffer();
+      const [pool_account] = web3.PublicKey.findProgramAddressSync(
+        [this.SEED_PREFIX, MINT_SEED],
+        this.program.programId
+      );
+      const [payer_ata] = web3.PublicKey.findProgramAddressSync(
+        [PAYER_SEED, TOKEN_PROGRAM_ID.toBuffer(), MINT_SEED],
+        SPL_ASSOCIATED_TOKEN_ACCOUNT_PROGRAM_ID
+      );
+      console.log(payer_ata.toBase58());
+      await this.program.methods
+        .createMetadataAccountMint({
+          id,
+          token,
+          data,
+          website,
+          twitter,
+          community,
+          image,
+          name,
+          ticker,
+          description,
+        })
+        .accounts({
+          authority: payer_publickey, //@ts-ignore
+          metadataAccount: metadata_account,
+          mint,
+          vaultWsol: vault_wsol,
+          vaultMint: vault_mint,
+          poolAccount: pool_account,
+          treasuryMint: treasury_mint,
+          token: token_publickey,
+          payerTokenAccount: payer_ata,
+        })
+        .rpc();
+    }
   }
 
   private formatData(dataRAW: ColoredPixelsDict) {

@@ -4,6 +4,7 @@ import {
   SystemStyleObject,
   CSSSelectorObjectOrCssVariables,
 } from "@mui/system";
+import { PublicKey } from "@solana/web3.js";
 import { ReactNode } from "react";
 
 export type Socials = {
@@ -223,6 +224,9 @@ export type Token = {
   address: string;
   name: string;
   decimals: number;
+  vault_wsol: PublicKey;
+  vault_mint: PublicKey;
+  treasury_mint: PublicKey;
 };
 
 export type BalanceCache = {

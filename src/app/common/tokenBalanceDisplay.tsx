@@ -1,7 +1,13 @@
 import { useContext } from "react";
 import { TokenBalanceContext } from "../context/TokenBalanceProvider";
+import { useWallet } from "@solana/wallet-adapter-react";
 
 export default function TokenBalanceDisplay() {
   const balance = useContext(TokenBalanceContext);
-  return <p>Balance: {balance}</p>;
+  const wallet = useWallet();
+  return (
+    <p style={{ display: wallet.connected ? "block" : "none" }}>
+      Balance: {balance}
+    </p>
+  );
 }

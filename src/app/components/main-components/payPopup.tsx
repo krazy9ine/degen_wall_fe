@@ -1,4 +1,9 @@
-import { BackdropCommon, ConnectWalletButton } from "@/app/common";
+import {
+  BackdropCommon,
+  ConnectWalletButton,
+  SelectTokenDropdown,
+  TokenBalanceDisplay,
+} from "@/app/common";
 import {
   MAX_SOCIALS_SIZE,
   NAME_LENGTH,
@@ -254,6 +259,8 @@ export default function PayPopup(props: PayPopupProps) {
       <BackdropCommon open={popupPay}>
         <div ref={menuRef} className="bg-green-100 text-black relative">
           <ConnectWalletButton></ConnectWalletButton>
+          <TokenBalanceDisplay></TokenBalanceDisplay>
+          <SelectTokenDropdown></SelectTokenDropdown>
           <button className="absolute top-0 right-0" onClick={onClosePopupPay}>
             X
           </button>

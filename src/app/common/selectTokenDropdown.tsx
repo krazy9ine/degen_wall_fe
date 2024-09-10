@@ -3,6 +3,7 @@ import { SelectTokenContext } from "../context/SelectTokenProvider";
 import { Dropdown } from "primereact/dropdown";
 import { TOKEN_DICT } from "../constants";
 import { TokenSymbol } from "../types";
+import { useWallet } from "@solana/wallet-adapter-react";
 
 // Custom option template to render image and label in the dropdown
 const optionTemplate = (option: TokenSymbol) => {
@@ -39,7 +40,7 @@ const valueTemplate = (option: TokenSymbol) => {
 
 export default function SelectTokenDropdown() {
   const context = useContext(SelectTokenContext);
-
+  const wallet = useWallet();
   const handleChange = (e: any) => {
     console.log(e);
     context?.onSetToken(e.value);
@@ -47,6 +48,7 @@ export default function SelectTokenDropdown() {
 
   return (
     <Dropdown
+      style={{ display: wallet.connected ? "inline-flex" : "none" }}
       value={context.symbol} // Find the selected token option
       options={Object.keys(TOKEN_DICT)}
       onChange={handleChange}

@@ -1,5 +1,10 @@
 import { BackdropCommon, ConnectWalletButton } from "@/app/common";
-import { NAME_LENGTH, TICKER_LENGTH, USER_REGEX } from "@/app/constants";
+import {
+  MAX_SOCIALS_SIZE,
+  NAME_LENGTH,
+  TICKER_LENGTH,
+  USER_REGEX,
+} from "@/app/constants";
 import { AnchorContext } from "@/app/context/AnchorProvider";
 import { PayPopupProps, Socials } from "@/app/types";
 import { isValidAddress } from "@/app/web3/misc";
@@ -13,6 +18,8 @@ import {
 } from "react";
 import urlRegex from "url-regex";
 import { getDefaultSocials } from "./canvas-components/canvas-util";
+import { Toast } from "primereact/toast";
+import { CircularProgress } from "@mui/material";
 
 const TWITTER_REGEX = /(?:twitter\.com\/|x\.com\/)([A-Za-z0-9_]+)(?:[/?]|$)/;
 const INVALID_URL_ERROR = "Invalid URL";
@@ -45,6 +52,16 @@ const EMPTY_SOCIALS: Socials = {
 
 const DEFAULT_SOCIALS = getDefaultSocials();
 
+const calculateUtf8StringSize = (socials: Socials) => {
+  const mergedString = Object.keys(socials)
+    .filter((key) => key !== "payer" && key !== "token") // Exclude "payer" and "token"
+    .map((key) => socials[key as keyof Socials])
+    .join("");
+  const encoder = new TextEncoder();
+  const utf8Bytes = encoder.encode(mergedString);
+  return utf8Bytes.length;
+};
+
 export default function PayPopup(props: PayPopupProps) {
   const { popupPay, onClosePopupPay, coloredPixelsDict, exitEditMode } = props;
   const menuRef = useRef<HTMLDivElement>(null);
@@ -53,6 +70,9 @@ export default function PayPopup(props: PayPopupProps) {
   const [errorLabels, setErrorLabels] = useState<Socials>(EMPTY_SOCIALS);
   const isInitialRender = useRef(true);
   const wallet = useWallet();
+  const socialsSize = calculateUtf8StringSize(socials);
+  const toast = useRef<Toast>(null);
+  const [isLoading, setIsLoading] = useState(false);
 
   useEffect(() => {
     if (popupPay && isInitialRender.current) {
@@ -66,7 +86,11 @@ export default function PayPopup(props: PayPopupProps) {
 
   const validateName = (name: string) => {
     if (name.length > NAME_LENGTH) {
-      console.warn(`Name can't be bigger than ${NAME_LENGTH}`);
+      toast?.current?.show({
+        severity: "error",
+        detail: `Name can't be bigger than ${NAME_LENGTH}!`,
+        life: 3000,
+      });
     } else {
       setSocials((prevSocials) => ({ ...prevSocials, name }));
     }
@@ -74,7 +98,11 @@ export default function PayPopup(props: PayPopupProps) {
 
   const validateTicker = (ticker: string) => {
     if (ticker.length > TICKER_LENGTH) {
-      console.warn(`Name can't be bigger than ${NAME_LENGTH}`);
+      toast?.current?.show({
+        severity: "error",
+        detail: `Ticker can't be bigger than ${TICKER_LENGTH}!`,
+        life: 3000,
+      });
     } else {
       setSocials((prevSocials) => ({ ...prevSocials, ticker }));
     }
@@ -158,15 +186,31 @@ export default function PayPopup(props: PayPopupProps) {
   };
 
   const onPay = async () => {
-    console.log(anchorContext, wallet?.publicKey);
+    setIsLoading(true);
     if (anchorContext && wallet?.publicKey) {
-      await anchorContext.createMetadataAccount(
-        { ...socials, payer: wallet?.publicKey.toString() },
-        coloredPixelsDict
-      );
-      exitEditMode();
-      onClosePopupPay();
+      try {
+        await anchorContext.createMetadataAccount(
+          { ...socials, payer: wallet?.publicKey.toString() },
+          coloredPixelsDict
+        );
+        toast?.current?.show({
+          severity: "success",
+          summary: "Success!",
+          detail: "That was a breeze, wasn't it?",
+          life: 3000,
+        });
+        exitEditMode();
+        onClosePopupPay();
+      } catch (error) {
+        toast?.current?.show({
+          severity: "error",
+          summary: "Error!",
+          detail: "Transaction failed!",
+          life: 3000,
+        });
+      }
     }
+    setIsLoading(false);
   };
 
   const TextField = (props: {
@@ -206,32 +250,73 @@ export default function PayPopup(props: PayPopupProps) {
   };
 
   return (
-    <BackdropCommon open={popupPay}>
-      <div ref={menuRef} className="bg-green-100 text-black relative">
-        <ConnectWalletButton></ConnectWalletButton>
-        <button className="absolute top-0 right-0" onClick={onClosePopupPay}>
-          X
-        </button>
-        <div>
-          {TextField({ id: "name", type: "text", validate: validateName })}
-          {TextField({ id: "ticker", type: "text", validate: validateTicker })}
-          {TextField({ id: "website", type: "url", validate: validateWebsite })}
-          {TextField({ id: "twitter", type: "url", validate: validateTwitter })}
-          {TextField({
-            id: "community",
-            type: "url",
-            validate: validateCommunity,
-          })}
-          {TextField({ id: "image", type: "url", validate: validateImage })}
-          {TextField({ id: "token", type: "text", validate: validateToken })}
-          {TextField({
-            id: "description",
-            type: "text",
-            validate: validateDescription,
-          })}
+    <>
+      <BackdropCommon open={popupPay}>
+        <div ref={menuRef} className="bg-green-100 text-black relative">
+          <ConnectWalletButton></ConnectWalletButton>
+          <button className="absolute top-0 right-0" onClick={onClosePopupPay}>
+            X
+          </button>
+          <div>
+            {TextField({ id: "name", type: "text", validate: validateName })}
+            {TextField({
+              id: "ticker",
+              type: "text",
+              validate: validateTicker,
+            })}
+            {TextField({
+              id: "website",
+              type: "url",
+              validate: validateWebsite,
+            })}
+            {TextField({
+              id: "twitter",
+              type: "url",
+              validate: validateTwitter,
+            })}
+            {TextField({
+              id: "community",
+              type: "url",
+              validate: validateCommunity,
+            })}
+            {TextField({ id: "image", type: "url", validate: validateImage })}
+            {TextField({
+              id: "description",
+              type: "text",
+              validate: validateDescription,
+            })}
+            <div className="flex flex-col">
+              <span id="character-count">
+                Character Count: {socialsSize}/{MAX_SOCIALS_SIZE}
+              </span>
+              <label
+                htmlFor="character-count"
+                style={{
+                  display: socialsSize > MAX_SOCIALS_SIZE ? "inline" : "none",
+                }}
+              >
+                Character count cannot be greater than {MAX_SOCIALS_SIZE}.
+                Please trim your socials!
+              </label>
+            </div>
+            {TextField({ id: "token", type: "text", validate: validateToken })}
+          </div>
+          {isLoading ? (
+            <CircularProgress /> // Render a spinner when loading
+          ) : (
+            <button
+              onClick={onPay}
+              disabled={
+                !(anchorContext && wallet?.publicKey) ||
+                socialsSize > MAX_SOCIALS_SIZE
+              }
+            >
+              Pay
+            </button>
+          )}
         </div>
-        <button onClick={onPay}>Pay</button>
-      </div>
-    </BackdropCommon>
+      </BackdropCommon>
+      <Toast ref={toast}></Toast>
+    </>
   );
 }

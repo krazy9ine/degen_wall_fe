@@ -42,7 +42,6 @@ export default function SelectTokenDropdown() {
   const context = useContext(SelectTokenContext);
   const wallet = useWallet();
   const handleChange = (e: any) => {
-    console.log(e);
     context?.onSetToken(e.value);
   };
 
